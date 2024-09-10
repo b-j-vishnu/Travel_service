@@ -1,0 +1,84 @@
+article{
+  .fc-toolbar-chunk .fc-button {
+  
+    display: none;
+  }
+  .fc {
+    height: 300px;
+    overflow: hidden;
+  }
+  .fc-scroller {
+    border: none;
+    outline: none;
+  }
+  .fc-col-header {
+    position: relative;
+    left: 1rem;
+    opacity: 0.6;
+  }
+  .fc-theme-standard td,
+  .fc-theme-standard th {
+    border: none !important;
+  }
+  .fc-toolbar-chunk{
+  margin-left: 1.5rem;
+  }
+  .fc-col-header,
+  .fc-scroller,
+  .fc-daygrid-day-frame,
+  .fc-scrollgrid-sync-inner {
+    border: none !important;
+    outline: none !important;
+    overflow: hidden !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  .fc-col-header {
+    margin-bottom: 1rem;
+  }
+  #fc-dom-256 {
+    font-family: "Poppins", sans-serif;
+  }
+  @media screen and (max-width:769px) {
+   .fc-daygrid-body {
+    width: 300px !important;
+    margin-left: -5px;
+    margin-top: 10px;
+  }
+  }
+  @media screen and (min-width:770px) and  (max-width:1025px) {
+   .fc-daygrid-body {
+    width: 330px !important;
+    margin-left: -5px;
+    margin-top: 10px;
+  }
+  }
+   @media screen and (min-width:1026px) and  (max-width:1440px) {
+   .fc-daygrid-body {
+    width: 470px !important;
+    margin-left: -20px;
+    margin-top: 10px;
+  }
+   }
+    @media screen and (min-width:1441px) and  (max-width:2561px) {
+   .fc-daygrid-body {
+    width: 940px !important;
+    margin-left: -56px;
+    margin-top: 10px;
+  }
+  }
+  .fc-scrollgrid,
+  .fc-scrollgrid-liquid {
+    border: none !important;
+    outline: none !important;
+  }
+
+  .fc-col-header {
+    position: static !important;
+    margin-left: 0.7rem !important;
+  }
+  .fc-scrollgrid-sync-table {
+    width: 94% !important;
+    margin-left: 2%;
+}
+}

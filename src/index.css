@@ -1,0 +1,14 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+.sidbar-item{
+    
+}
+
+@media (min-width: 700px) {
+  .sidbar-item {
+  column-gap: 0.5rem;
+
+  }
+}
