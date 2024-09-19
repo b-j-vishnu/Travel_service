@@ -1,8 +1,11 @@
 /* eslint-disable no-unused-vars */
+import axios from "axios";
 import React, { useState } from "react";
-
+import { useDispatch } from "react-redux";
+import { getLeads } from "../../Actions/LeadsActions";
 // eslint-disable-next-line react/prop-types
-const LeadsFilters = ({ leadsInformation }) => {
+const LeadsFilters = ({ leadsInformation, handleHideFilter }) => {
+  const dispatch = useDispatch();
   const [filterOptions, setFilterOptions] = useState({
     dealStage: "",
     enquiryType: "",
@@ -11,9 +14,14 @@ const LeadsFilters = ({ leadsInformation }) => {
     userId: "",
   });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(filterOptions);
+    const data = await axios.post(
+      "http://localhost:4000/leads/filterLeads",
+      filterOptions
+    );
+    console.log(data.data.filteredLeads);
+    dispatch(getLeads(data.data.filteredLeads));
   };
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -45,8 +53,8 @@ const LeadsFilters = ({ leadsInformation }) => {
           <option value="Converted To Deal"> Converted to Deal</option>
           <option value="Cancelled">Cancelled</option>
           <option value="proposal Sent">Proposal Sent</option>
-          <option value="meeting Fixed">Meeting Fixed</option>
-          <option value="yes To Confirm">Yes to Confirm </option>
+          <option value="Meeting Fixed">Meeting Fixed</option>
+          <option value="Yes To Confirm">Yes to Confirm </option>
         </select>
         <label
           htmlFor="countries"
@@ -64,10 +72,10 @@ const LeadsFilters = ({ leadsInformation }) => {
             Select
           </option>
           <option value="Flight Booking">Flight Booking</option>
-          <option value="hotel Booking">Hotel Booking</option>
-          <option value="sight Seeing">Sight Seeing</option>
-          <option value="transport">Transport</option>
-          <option value="others">Others</option>
+          <option value="Hotel Booking">Hotel Booking</option>
+          <option value="Sight Seeing">Sight Seeing</option>
+          <option value="Transport">Transport</option>
+          <option value="Others">Others</option>
         </select>
         <label
           htmlFor="countries"
@@ -87,7 +95,7 @@ const LeadsFilters = ({ leadsInformation }) => {
           <option value="Domestic" className="">
             Domestic
           </option>
-          <option value="international">International</option>
+          <option value="International">International</option>
         </select>
         <label className="block mt-5  roboto-bold text-xs mb-2  text-gray-100  font-medium dark:text-white">
           Phone Number
@@ -113,7 +121,10 @@ const LeadsFilters = ({ leadsInformation }) => {
           <button className="px-9 roboto-bold rounded-xl py-1 bg-white text-black">
             Filter
           </button>
-          <button className="px-4  roboto-bold text-gray-500 rounded-xl py-1 bg-gray-200">
+          <button
+            onClick={handleHideFilter}
+            className="px-4  roboto-bold text-gray-500 rounded-xl py-1 bg-gray-200"
+          >
             Cancel
           </button>
         </div>

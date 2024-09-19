@@ -1,7 +1,15 @@
 import DashBoard from "./pages/DashboardPages/DashBoard";
 import "./assets/css/fonts.css";
 import Sidbar from "./Sidbar";
-import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
+import {
+  Routes,
+  Route,
+  useLocation,
+  useNavigate,
+  Navigate,
+} from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import MyCalander from "./pages/Mycalendar/MyCalendar";
 import Header from "./Header";
 import Leads from "./pages/Leads/Leads";
@@ -20,37 +28,46 @@ import AddAdditionalPayement from "./pages/InvoiceORbill/AddAdditionalPayement";
 import axios from "axios";
 import { useState, useEffect } from "react";
 const App = () => {
+  const [access, setAccess] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
   const location = useLocation();
   const navigate = useNavigate();
+
   useEffect(() => {
-    navigate("/dashboard");
+    axios
+      .get("http://localhost:4000/getDashboard", { withCredentials: true })
+      .then((response) => {
+        console.log(response);
+        setAccess(true);
+      })
+      .catch((error) => {
+        console.error("Error fetching access:", error);
+        setAccess(false);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   }, []);
-  //  const [access, setAccess] = useState("");
   const isSignupPage = location.pathname === "/";
-  /* console.log(isSignupPage);
-  useEffect(() => {
-    const getAccess = async () => {
-      await axios
-        .get("http://localhost:4000/client/verify", { withCredentials: true })
-        .then((response) => {
-          console.log(response.data.message);
-          setAccess(response.data.message);
-        })
-        .catch((err) => {
-          if (err) {
-            navigate("/");
-            console.log(err);
-          }
-        });
-    };
-    getAccess();
-  }, [navigate]);*/
+
+  if (isLoading) {
+    return (
+      <div className="w-full h-[100vh] flex justify-center items-center">
+        <h1>Loading...</h1>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full">
       {!isSignupPage && <Sidbar />}
-      {!isSignupPage && <Header />}
+      {!isSignupPage && <Header setAccess={setAccess} />}
       <Routes>
+        <Route
+          path="/"
+          element={!access ? <SignUp /> : <Navigate to="/dashboard" />}
+        />
         <Route path="/dashboard" element={<DashBoard />} />
         <Route path="/calander" element={<MyCalander />} />
         <Route path="/leads">
@@ -85,6 +102,7 @@ const App = () => {
           <Route index element={<Finance />}></Route>
         </Route>
       </Routes>
+      <ToastContainer />
     </div>
   );
 };

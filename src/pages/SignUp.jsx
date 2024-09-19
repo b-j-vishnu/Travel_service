@@ -1,12 +1,13 @@
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 const SignUp = () => {
   const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState(false);
+  const [errors, setErrors] = useState();
   const [credentials, setCredentials] = useState({
-    fullName: "",
+    userName: "",
     email: "",
     mobile: "",
     password: "",
@@ -14,35 +15,115 @@ const SignUp = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setCredentials((prev) => ({ ...prev, [name]: value }));
+    setErrors((prev) => ({ ...prev, [name]: "" }));
   };
-  const handleSignup = (e) => {
+  function validate() {
+    const errors = {};
+    let valid = true;
+    console.log("enterd in validate function");
+
+    if (credentials.userName.length < 3 || credentials.userName.length === 0) {
+      errors.userName = "userName must be 3 characters below";
+      valid = false;
+    }
+    if (!credentials.email.includes("@gmail.com") || credentials.email === "") {
+      errors.email = "Invalid email";
+      valid = false;
+    }
+    if (credentials.mobile.length != 10 || credentials.mobile.length === 0) {
+      errors.mobile = "Mobile number should be 10 numbers";
+      valid = false;
+    }
+    if (credentials.password.length == 0) {
+      errors.password = "Enter Password";
+      valid = false;
+    }
+    setErrors(errors);
+    return valid;
+  }
+  function validateForLogin() {
+    const errors = {};
+    let valid = true;
+    console.log("enterd in validate function");
+    if (!credentials.email.includes("@gmail.com") || credentials.email === "") {
+      errors.email = "Invalid email";
+      valid = false;
+    }
+    if (credentials.password.length == 0) {
+      errors.password = "Enter Password";
+      valid = false;
+    }
+    setErrors(errors);
+    return valid;
+  }
+  const handleSignup = async (e) => {
     e.preventDefault();
-    const sendData = async () => {
+    if (!validate()) {
+      return console.log("validation error");
+    }
+    try {
       const datas = await axios.post(
-        "http://localhost:4000/client/signup",
+        "http://localhost:4000/signup",
         credentials
       );
       if (datas.status === 200) {
         setIsLogin(true);
       }
-    };
-    sendData();
+    } catch (err) {
+      console.log(err);
+    }
   };
+
   const handleLogin = (e) => {
     e.preventDefault();
+    if (!validateForLogin()) {
+      return console.log("validation error");
+    }
     const sendData = async () => {
-      const datas = await axios.post(
-        "http://localhost:4000/client/login",
-        credentials,
-        { withCredentials: true }
-      );
-      if (datas?.data?.token) {
-        navigate("/dashboard");
+      const dataToLogin = {
+        email: credentials.email,
+        password: credentials.password,
+      };
+
+      try {
+        const datas = await axios.post(
+          "http://localhost:4000/login",
+          dataToLogin,
+          { withCredentials: true }
+        );
+        if (datas?.data?.token) {
+          navigate("/dashboard");
+        }
+      } catch (err) {
+        const msg = err.response.data.message;
+        if (msg.includes("Email")) {
+          setErrors({ email: msg });
+        }
+        if (msg.includes("Password")) {
+          setErrors({ password: msg });
+        }
       }
     };
     sendData();
   };
-
+  const handleShowLogin = () => {
+    setIsLogin(!isLogin);
+    setCredentials({
+      userName: "",
+      email: "",
+      mobile: "",
+      password: "",
+    });
+  };
+  useEffect(() => {
+    setErrors({});
+    setCredentials({
+      userName: "",
+      email: "",
+      mobile: "",
+      password: "",
+    });
+  }, [isLogin]);
   return (
     <div className="bg-signup roboto-regular w-full h-[100vh]">
       <div className="bg-shadow flex justify-center items-center w-full h-[100vh]">
@@ -56,7 +137,7 @@ const SignUp = () => {
             <div className="w-[80%] bg-gray-900 border-2 rounded-2xl border-orange-200 bg-opacity-25  text-white  h-full">
               <div className="flex justify-around text-2xl items-center  h-1/5">
                 <p
-                  onClick={() => setIsLogin(true)}
+                  onClick={handleShowLogin}
                   className={`${
                     isLogin ? "text-orange-500" : ""
                   } hover:cursor-pointer`}
@@ -64,7 +145,7 @@ const SignUp = () => {
                   Login
                 </p>
                 <p
-                  onClick={() => setIsLogin(false)}
+                  onClick={handleShowLogin}
                   className={`${
                     !isLogin ? "text-orange-500" : ""
                   } hover:cursor-pointer`}
@@ -78,127 +159,163 @@ const SignUp = () => {
                   onChange={handleChange}
                 >
                   {!isLogin && (
-                    <label className="w-full flex pl-2 pr-4 items-center bg-blue-gray-900 text-white border-4  border-orange-400 focus:ring-0 focus:outline-none focus:border-orange-400  rounded-2xl ">
-                      <input
-                        type="text"
-                        placeholder="Enter username"
-                        name="fullName"
-                        value={credentials.fullName}
-                        className="px-4 py-2.5 w-full focus:ring-0 bg-blue-gray-900 border-none rounded-xl"
-                      />
-                      <span className="flex flex-col  items-center">
-                        <svg
-                          className="w-3 h-3"
-                          viewBox="0 0 19 19"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M9.33268 17.6667C13.843 17.6667 17.4993 13.9357 17.4993 9.33333C17.4993 4.73096 13.843 1 9.33268 1C4.82236 1 1.16602 4.73096 1.16602 9.33333C1.16602 13.9357 4.82236 17.6667 9.33268 17.6667Z"
-                            stroke="white"
-                            strokeWidth="2"
-                          />
-                        </svg>
-                        <svg
-                          className="w-7 h-5"
-                          viewBox="0 0 35 22"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M33.6667 11.207C33.6667 16.3847 33.6667 20.582 17.3333 20.582C1 20.582 1 16.3847 1 11.207C1 6.02932 8.31268 1.83203 17.3333 1.83203C26.354 1.83203 33.6667 6.02932 33.6667 11.207Z"
-                            stroke="white"
-                            strokeWidth="2"
-                          />
-                        </svg>
-                      </span>
-                    </label>
-                  )}
-
-                  <label className="w-full flex pl-2 pr-4 items-center bg-blue-gray-900 text-white border-4  border-orange-400 focus:ring-0 focus:outline-none focus:border-orange-400  rounded-2xl ">
-                    <input
-                      type="email"
-                      placeholder="Enter Email"
-                      name="email"
-                      value={credentials.email}
-                      className="px-4 py-2.5 w-full focus:ring-0 bg-blue-gray-900 border-none rounded-xl"
-                    />
-                    <span className="flex flex-col  items-center">
-                      <svg
-                        className="w-7"
-                        viewBox="0 0 33 26"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M0 8.095V20.5C0 21.8261 0.579462 23.0979 1.61091 24.0355C2.64236 24.9732 4.04131 25.5 5.5 25.5H27.5C28.9587 25.5 30.3576 24.9732 31.3891 24.0355C32.4205 23.0979 33 21.8261 33 20.5V5.5C33 4.17392 32.4205 2.90215 31.3891 1.96447C30.3576 1.02678 28.9587 0.5 27.5 0.5H5.5C4.04131 0.5 2.64236 1.02678 1.61091 1.96447C0.579462 2.90215 0 4.17392 0 5.5V8.095ZM5.5 3H27.5C28.2293 3 28.9288 3.26339 29.4445 3.73223C29.9603 4.20107 30.25 4.83696 30.25 5.5V7.35L16.5 14.08L2.75 7.35V5.5C2.75 4.83696 3.03973 4.20107 3.55546 3.73223C4.07118 3.26339 4.77065 3 5.5 3ZM2.75 10.19L15.8483 16.6C16.0486 16.698 16.2725 16.7493 16.5 16.7493C16.7275 16.7493 16.9514 16.698 17.1518 16.6L30.25 10.19V20.5C30.25 21.163 29.9603 21.7989 29.4445 22.2678C28.9288 22.7366 28.2293 23 27.5 23H5.5C4.77065 23 4.07118 22.7366 3.55546 22.2678C3.03973 21.7989 2.75 21.163 2.75 20.5V10.19Z"
-                          fill="white"
+                    <div className="w-full flex flex-col items-start">
+                      <label className="w-full flex pl-2 pr-4 items-center bg-blue-gray-900 text-white border-4  border-orange-400 focus:ring-0 focus:outline-none focus:border-orange-400  rounded-2xl ">
+                        <input
+                          type="text"
+                          placeholder="Enter username"
+                          name="userName"
+                          value={credentials.userName}
+                          className="px-4 py-2.5 w-full focus:ring-0 bg-blue-gray-900 border-none rounded-xl"
                         />
-                      </svg>
-                    </span>
-                  </label>
-                  {!isLogin && (
+                        <span className="flex flex-col  items-center">
+                          <svg
+                            className="w-3 h-3"
+                            viewBox="0 0 19 19"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M9.33268 17.6667C13.843 17.6667 17.4993 13.9357 17.4993 9.33333C17.4993 4.73096 13.843 1 9.33268 1C4.82236 1 1.16602 4.73096 1.16602 9.33333C1.16602 13.9357 4.82236 17.6667 9.33268 17.6667Z"
+                              stroke="white"
+                              strokeWidth="2"
+                            />
+                          </svg>
+                          <svg
+                            className="w-7 h-5"
+                            viewBox="0 0 35 22"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M33.6667 11.207C33.6667 16.3847 33.6667 20.582 17.3333 20.582C1 20.582 1 16.3847 1 11.207C1 6.02932 8.31268 1.83203 17.3333 1.83203C26.354 1.83203 33.6667 6.02932 33.6667 11.207Z"
+                              stroke="white"
+                              strokeWidth="2"
+                            />
+                          </svg>
+                        </span>
+                      </label>
+                      {errors && errors.userName ? (
+                        <p className="text-sm relative left-2 text-red-600 brightness-200 poppins-medium">
+                          {errors.userName}
+                        </p>
+                      ) : (
+                        <p className="h-5"></p>
+                      )}
+                    </div>
+                  )}
+                  <div className="w-full flex flex-col items-start">
                     <label className="w-full flex pl-2 pr-4 items-center bg-blue-gray-900 text-white border-4  border-orange-400 focus:ring-0 focus:outline-none focus:border-orange-400  rounded-2xl ">
                       <input
-                        type="text"
-                        placeholder="Enter Mobile Number"
-                        name="mobile"
-                        value={credentials.mobile}
+                        type="email"
+                        placeholder="Enter Email"
+                        name="email"
+                        value={credentials.email}
                         className="px-4 py-2.5 w-full focus:ring-0 bg-blue-gray-900 border-none rounded-xl"
                       />
                       <span className="flex flex-col  items-center">
                         <svg
-                          className="w-6 h-6"
-                          viewBox="0 0 34 34"
+                          className="w-7"
+                          viewBox="0 0 33 26"
                           fill="none"
                           xmlns="http://www.w3.org/2000/svg"
                         >
                           <path
-                            d="M32.2421 23.0816L24.1227 19.443C23.7548 19.2853 23.3534 19.222 22.9549 19.2586C22.5563 19.2952 22.1732 19.4306 21.8402 19.6527C21.8064 19.6744 21.7743 19.6986 21.7439 19.7248L17.5003 23.3342C17.4563 23.3582 17.4073 23.3717 17.3572 23.3734C17.3071 23.3752 17.2572 23.3653 17.2116 23.3445C14.4839 22.028 11.6583 19.2195 10.3366 16.5297C10.3146 16.4847 10.3031 16.4354 10.3031 16.3853C10.3031 16.3353 10.3146 16.2859 10.3366 16.2409L13.958 11.9441C13.984 11.9123 14.0081 11.879 14.0302 11.8444C14.2491 11.5101 14.3814 11.1265 14.415 10.7283C14.4486 10.3302 14.3825 9.92986 14.2227 9.5636L10.6099 1.45797C10.4047 0.97949 10.0499 0.580454 9.59865 0.320755C9.14744 0.0610562 8.62416 -0.0452953 8.10736 0.0176619C5.86134 0.312937 3.79968 1.41593 2.30765 3.12052C0.815621 4.82511 -0.0046882 7.01466 2.01564e-05 9.28001C2.01564e-05 22.7378 10.9485 33.6863 24.4063 33.6863C26.6715 33.6906 28.8609 32.8702 30.5654 31.3782C32.2699 29.8862 33.373 27.8248 33.6686 25.5789C33.7314 25.0645 33.6265 24.5436 33.3695 24.0937C33.1125 23.6437 32.717 23.2887 32.2421 23.0816ZM24.4063 31.6238C12.0863 31.6238 2.06252 21.6 2.06252 9.28001C2.05677 7.51645 2.69331 5.81112 3.85319 4.48265C5.01308 3.15417 6.61696 2.29344 8.36518 2.06126H8.40471C8.47397 2.06255 8.54123 2.08474 8.59766 2.12492C8.65409 2.16509 8.69707 2.22139 8.72096 2.28641L12.3475 10.3834C12.3682 10.4285 12.3789 10.4774 12.3789 10.527C12.3789 10.5765 12.3682 10.6255 12.3475 10.6705L8.71924 14.9777C8.6923 15.0085 8.6676 15.0413 8.64533 15.0756C8.4183 15.4222 8.2846 15.8216 8.2572 16.235C8.2298 16.6484 8.30962 17.0619 8.48893 17.4355C10.0135 20.5567 13.1588 23.678 16.3144 25.2025C16.6901 25.3808 17.1056 25.4587 17.5204 25.4286C17.9352 25.3985 18.3351 25.2614 18.6811 25.0306C18.7138 25.0083 18.7464 24.9842 18.7774 24.9584L23.0192 21.3491C23.0611 21.3266 23.1074 21.3134 23.1549 21.3104C23.2023 21.3074 23.2499 21.3148 23.2942 21.3319L31.4153 24.9705C31.4817 24.9987 31.5374 25.0471 31.5748 25.1088C31.6121 25.1705 31.6291 25.2424 31.6233 25.3142C31.3923 27.0632 30.5324 28.6683 29.2042 29.8295C27.876 30.9907 26.1705 31.6285 24.4063 31.6238Z"
+                            d="M0 8.095V20.5C0 21.8261 0.579462 23.0979 1.61091 24.0355C2.64236 24.9732 4.04131 25.5 5.5 25.5H27.5C28.9587 25.5 30.3576 24.9732 31.3891 24.0355C32.4205 23.0979 33 21.8261 33 20.5V5.5C33 4.17392 32.4205 2.90215 31.3891 1.96447C30.3576 1.02678 28.9587 0.5 27.5 0.5H5.5C4.04131 0.5 2.64236 1.02678 1.61091 1.96447C0.579462 2.90215 0 4.17392 0 5.5V8.095ZM5.5 3H27.5C28.2293 3 28.9288 3.26339 29.4445 3.73223C29.9603 4.20107 30.25 4.83696 30.25 5.5V7.35L16.5 14.08L2.75 7.35V5.5C2.75 4.83696 3.03973 4.20107 3.55546 3.73223C4.07118 3.26339 4.77065 3 5.5 3ZM2.75 10.19L15.8483 16.6C16.0486 16.698 16.2725 16.7493 16.5 16.7493C16.7275 16.7493 16.9514 16.698 17.1518 16.6L30.25 10.19V20.5C30.25 21.163 29.9603 21.7989 29.4445 22.2678C28.9288 22.7366 28.2293 23 27.5 23H5.5C4.77065 23 4.07118 22.7366 3.55546 22.2678C3.03973 21.7989 2.75 21.163 2.75 20.5V10.19Z"
                             fill="white"
                           />
                         </svg>
                       </span>
                     </label>
-                  )}
-                  <label className="w-full flex pl-2 pr-4 items-center bg-blue-gray-900 text-white border-4  border-orange-400 focus:ring-0 focus:outline-none focus:border-orange-400  rounded-2xl ">
-                    <div className="flex items-center w-full">
-                      <input
-                        type="password"
-                        placeholder="Enter password"
-                        name="password"
-                        value={credentials.password}
-                        className="px-4 py-2.5 w-full focus:ring-0 bg-blue-gray-900 border-none rounded-xl"
-                      />
-                      <span className="flex flex-col  items-center">
-                        <svg
-                          className="w-4 h-3"
-                          viewBox="0 0 22 16"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M1.5 15V11.5C1.5 5.70101 5.86522 1 11.25 1C16.6348 1 21 5.70101 21 11.5V15"
-                            stroke="#DBDBDB"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                          />
-                        </svg>
-                        <svg
-                          className="w-7 h-4"
-                          viewBox="0 0 35 23"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M1 11.5C1 6.5503 1 4.07545 2.42786 2.53773C3.85571 1 6.1538 1 10.75 1H23.75C28.3461 1 30.6442 1 32.0721 2.53773C33.5 4.07545 33.5 6.5503 33.5 11.5C33.5 16.4497 33.5 18.9245 32.0721 20.4623C30.6442 22 28.3461 22 23.75 22H10.75C6.1538 22 3.85571 22 2.42786 20.4623C1 18.9245 1 16.4497 1 11.5Z"
-                            stroke="#DBDBDB"
-                            strokeWidth="2"
-                          />
-                        </svg>
-                      </span>
+                    {errors && errors.email ? (
+                      <p className="text-sm relative left-2 text-red-600 brightness-200 poppins-medium">
+                        {errors.email}
+                      </p>
+                    ) : (
+                      <p className="h-5"></p>
+                    )}
+                  </div>
+                  {!isLogin && (
+                    <div className="w-full flex flex-col items-start">
+                      <label className="w-full flex pl-2 pr-4 items-center bg-blue-gray-900 text-white border-4  border-orange-400 focus:ring-0 focus:outline-none focus:border-orange-400  rounded-2xl ">
+                        <input
+                          type="number"
+                          placeholder="Enter Mobile Number"
+                          name="mobile"
+                          value={credentials.mobile}
+                          className="px-4 py-2.5 w-full focus:ring-0 bg-blue-gray-900 border-none rounded-xl"
+                        />
+                        <span className="flex flex-col  items-center">
+                          <svg
+                            className="w-6 h-6"
+                            viewBox="0 0 34 34"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M32.2421 23.0816L24.1227 19.443C23.7548 19.2853 23.3534 19.222 22.9549 19.2586C22.5563 19.2952 22.1732 19.4306 21.8402 19.6527C21.8064 19.6744 21.7743 19.6986 21.7439 19.7248L17.5003 23.3342C17.4563 23.3582 17.4073 23.3717 17.3572 23.3734C17.3071 23.3752 17.2572 23.3653 17.2116 23.3445C14.4839 22.028 11.6583 19.2195 10.3366 16.5297C10.3146 16.4847 10.3031 16.4354 10.3031 16.3853C10.3031 16.3353 10.3146 16.2859 10.3366 16.2409L13.958 11.9441C13.984 11.9123 14.0081 11.879 14.0302 11.8444C14.2491 11.5101 14.3814 11.1265 14.415 10.7283C14.4486 10.3302 14.3825 9.92986 14.2227 9.5636L10.6099 1.45797C10.4047 0.97949 10.0499 0.580454 9.59865 0.320755C9.14744 0.0610562 8.62416 -0.0452953 8.10736 0.0176619C5.86134 0.312937 3.79968 1.41593 2.30765 3.12052C0.815621 4.82511 -0.0046882 7.01466 2.01564e-05 9.28001C2.01564e-05 22.7378 10.9485 33.6863 24.4063 33.6863C26.6715 33.6906 28.8609 32.8702 30.5654 31.3782C32.2699 29.8862 33.373 27.8248 33.6686 25.5789C33.7314 25.0645 33.6265 24.5436 33.3695 24.0937C33.1125 23.6437 32.717 23.2887 32.2421 23.0816ZM24.4063 31.6238C12.0863 31.6238 2.06252 21.6 2.06252 9.28001C2.05677 7.51645 2.69331 5.81112 3.85319 4.48265C5.01308 3.15417 6.61696 2.29344 8.36518 2.06126H8.40471C8.47397 2.06255 8.54123 2.08474 8.59766 2.12492C8.65409 2.16509 8.69707 2.22139 8.72096 2.28641L12.3475 10.3834C12.3682 10.4285 12.3789 10.4774 12.3789 10.527C12.3789 10.5765 12.3682 10.6255 12.3475 10.6705L8.71924 14.9777C8.6923 15.0085 8.6676 15.0413 8.64533 15.0756C8.4183 15.4222 8.2846 15.8216 8.2572 16.235C8.2298 16.6484 8.30962 17.0619 8.48893 17.4355C10.0135 20.5567 13.1588 23.678 16.3144 25.2025C16.6901 25.3808 17.1056 25.4587 17.5204 25.4286C17.9352 25.3985 18.3351 25.2614 18.6811 25.0306C18.7138 25.0083 18.7464 24.9842 18.7774 24.9584L23.0192 21.3491C23.0611 21.3266 23.1074 21.3134 23.1549 21.3104C23.2023 21.3074 23.2499 21.3148 23.2942 21.3319L31.4153 24.9705C31.4817 24.9987 31.5374 25.0471 31.5748 25.1088C31.6121 25.1705 31.6291 25.2424 31.6233 25.3142C31.3923 27.0632 30.5324 28.6683 29.2042 29.8295C27.876 30.9907 26.1705 31.6285 24.4063 31.6238Z"
+                              fill="white"
+                            />
+                          </svg>
+                        </span>
+                      </label>
+                      {errors && errors.mobile ? (
+                        <p className="text-sm relative left-2 text-red-600 brightness-200 poppins-medium">
+                          {errors.mobile}
+                        </p>
+                      ) : (
+                        <p className="h-5"></p>
+                      )}
                     </div>
-                  </label>
+                  )}
+                  <div className="w-full flex flex-col items-start">
+                    <label className="w-full flex pl-2 pr-4 items-center bg-blue-gray-900 text-white border-4  border-orange-400 focus:ring-0 focus:outline-none focus:border-orange-400  rounded-2xl ">
+                      <div className="flex items-center w-full">
+                        <input
+                          type="password"
+                          placeholder="Enter password"
+                          name="password"
+                          value={credentials.password}
+                          className="px-4 py-2.5 w-full focus:ring-0 bg-blue-gray-900 border-none rounded-xl"
+                        />
+                        <span className="flex flex-col  items-center">
+                          <svg
+                            className="w-4 h-3"
+                            viewBox="0 0 22 16"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M1.5 15V11.5C1.5 5.70101 5.86522 1 11.25 1C16.6348 1 21 5.70101 21 11.5V15"
+                              stroke="#DBDBDB"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                            />
+                          </svg>
+                          <svg
+                            className="w-7 h-4"
+                            viewBox="0 0 35 23"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M1 11.5C1 6.5503 1 4.07545 2.42786 2.53773C3.85571 1 6.1538 1 10.75 1H23.75C28.3461 1 30.6442 1 32.0721 2.53773C33.5 4.07545 33.5 6.5503 33.5 11.5C33.5 16.4497 33.5 18.9245 32.0721 20.4623C30.6442 22 28.3461 22 23.75 22H10.75C6.1538 22 3.85571 22 2.42786 20.4623C1 18.9245 1 16.4497 1 11.5Z"
+                              stroke="#DBDBDB"
+                              strokeWidth="2"
+                            />
+                          </svg>
+                        </span>
+                      </div>
+                    </label>
+                    {errors && errors.password ? (
+                      <p className="text-sm relative left-2 text-red-600 brightness-200 poppins-medium">
+                        {errors.password}
+                      </p>
+                    ) : (
+                      <p className="h-5"></p>
+                    )}
+                  </div>
+
                   {isLogin && (
                     <div className="flex -mt-5 w-full justify-end">
                       <Link className=" ">Forgot Password?</Link>

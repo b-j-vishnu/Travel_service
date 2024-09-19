@@ -10,7 +10,8 @@ const InvoiceORbill = () => {
 
   const [showDropdown, setShowDropdown] = useState({});
   const dispatch = useDispatch();
-
+  const [checkBox, setCheckBox] = useState({});
+  const [allCheckBox, setAllCheckBox] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -254,6 +255,16 @@ const InvoiceORbill = () => {
     const filterEl = document.getElementById("invoiceFilter");
     filterEl.classList.replace("block", "hidden");
   };
+
+  const handleAllChecked = () => {
+    const indexes = InvocieInformation.keys();
+    const checkbox = indexes.reduce((acc, value) => {
+      acc[value] = allCheckBox ? false : true;
+      return acc;
+    }, {});
+    setCheckBox(checkbox);
+    setAllCheckBox(!allCheckBox);
+  };
   return (
     <div className="w-full flex mt-16 justify-end mb-10 bg-gray-200 ">
       <div
@@ -338,6 +349,7 @@ const InvoiceORbill = () => {
                   <th className="py-2 pl-4">
                     <input
                       type="checkbox"
+                      onChange={handleAllChecked}
                       className="w-4 rounded-[0.2rem] focus:ring-0 h-4"
                     />
                   </th>
@@ -359,6 +371,7 @@ const InvoiceORbill = () => {
                     <td className="pt-5 pl-4    ">
                       <input
                         type="checkbox"
+                        checked={checkBox[index]}
                         className="w-4 outline-none rounded-[0.2rem] focus:ring-0 h-4"
                       />
                     </td>

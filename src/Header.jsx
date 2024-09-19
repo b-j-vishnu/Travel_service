@@ -2,18 +2,22 @@ import searchIcon from "../Images/search.png";
 import notifyIcon from "../Images/notifiy.png";
 import userIcon from "../Images/user.png";
 import Input from "./pages/Custom/Input";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-const Header = () => {
+const Header = ({ setAccess }) => {
   const [showLogout, setShowLogout] = useState(false);
   const navigate = useNavigate();
   const handleLogout = async () => {
-    let data = await axios.get("http://localhost:4000/client/logout", {
+    let data = await axios.get("http://localhost:4000/logout", {
       withCredentials: true,
     });
-    if (data.status === 200) navigate("/");
+    console.log(data.status);
+    if (data.status === 200) {
+      setAccess(false);
+      navigate("/");
+    }
   };
 
   return (

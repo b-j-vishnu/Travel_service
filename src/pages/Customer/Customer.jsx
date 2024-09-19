@@ -20,6 +20,8 @@ const Customer = () => {
     indexOfFirstItem,
     indexOfLastItem
   );
+  const [checkBox, setCheckBox] = useState({});
+  const [allCheckBox, setAllCheckBox] = useState(false);
 
   useEffect(() => {
     dispatch(
@@ -167,7 +169,15 @@ const Customer = () => {
       ])
     );
   }, [dispatch]);
-
+  const handleAllChecked = () => {
+    const indexes = CustomerInformation.keys();
+    const checkbox = indexes.reduce((acc, value) => {
+      acc[value] = allCheckBox ? false : true;
+      return acc;
+    }, {});
+    setCheckBox(checkbox);
+    setAllCheckBox(!allCheckBox);
+  };
   const totalPages = Math.ceil(CustomerInformation.length / 10);
 
   const handleShowFilters = (e) => {
@@ -268,6 +278,7 @@ const Customer = () => {
                   <th className="py-2 pl-2">
                     <input
                       type="checkbox"
+                      onChange={handleAllChecked}
                       className="w-4 rounded-[0.2rem] focus:ring-0 h-4"
                     />
                   </th>
@@ -290,6 +301,7 @@ const Customer = () => {
                     <td className="pt-5 pl-2 w-8 ">
                       <input
                         type="checkbox"
+                        checked={checkBox[index]}
                         className="w-4 rounded-[0.2rem] outline-none  focus:ring-0 h-4"
                       />
                     </td>

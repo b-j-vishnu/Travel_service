@@ -1,86 +1,142 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import InputBox from "./InputBox";
-import { Datepicker } from "flowbite";
-import "flowbite/dist/flowbite.min.css";
-
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 const AddLeads = () => {
-  const datepickerRef = useRef(null);
-  const datepickerRef2 = useRef(null);
+  const navigate = useNavigate();
+  const [errors, setErrors] = useState({});
+
   const initialState = {
     firstName: "",
     lastName: "",
     enquiryType: "",
-    mobileNumber: "",
+    mobile: "",
     email: "",
     dealStage: "",
     dealValue: "",
     package: "",
-    executive: "",
+    followUpDate: "",
+    expectedClosureDate: "",
+    executiveName: "",
     plannedNoOfDays: "",
     destination: "",
     billingAmount: "",
     paid: "",
-    balancePayment: "",
+    balanceAmount: "",
   };
   const [addLeadsData, setAddLeadsData] = useState(initialState);
-
-  useEffect(() => {
-    const datepickerEl = document.getElementById("default-datepicker");
-    const datepickerE2 = document.getElementById("default-datepickertwo");
-
-    if (datepickerEl || datepickerE2) {
-      const options = {
-        autohide: false,
-        format: "dd/mm/yyyy",
-        maxDate: null,
-        minDate: null,
-        orientation: "bottom",
-        buttons: false,
-        autoSelectToday: false,
-        title: null,
-        rangePicker: false,
-        onShow: () => {},
-        onHide: () => {},
-      };
-
-      datepickerRef.current = new Datepicker(datepickerEl, options);
-      datepickerRef2.current = new Datepicker(datepickerE2, options);
-
-      return () => {
-        if (datepickerRef.current) {
-          datepickerRef.current.destroy();
-        }
-        if (datepickerRef2.current) {
-          datepickerRef2.current.destroy();
-        }
-      };
-    } else {
-      console.error(
-        "Element with ID 'default-datepicker' or 'default-datepickertwo' not found."
-      );
-    }
-  }, []);
-
   const handleChange = (e) => {
     const { name, value } = e.target;
+    console.log(name, value);
     setAddLeadsData((prev) => ({
       ...prev,
       [name]: value,
     }));
+    setErrors((prev) => ({ ...prev, [name]: false }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const followup1 = datepickerRef.current?.getDate();
-    const followup2 = datepickerRef2.current?.getDate();
-    if (followup1 && followup2) {
-      const dateObj1 = new Date(followup1);
-      const dateObj2 = new Date(followup2);
+  function validate() {
+    let valid = true;
+    if (
+      addLeadsData.firstName.length < 3 ||
+      addLeadsData.firstName.length == 0
+    ) {
+      setErrors((prev) => ({ ...prev, firstName: true }));
+      valid = false;
+    }
+    if (
+      addLeadsData.lastName.length > 10 ||
+      addLeadsData.lastName.length == 0
+    ) {
+      setErrors((prev) => ({ ...prev, lastName: true }));
+      valid = false;
+    }
+    if (addLeadsData.enquiryType.length == "") {
+      setErrors((prev) => ({ ...prev, enquiryType: true }));
+      valid = false;
+    }
 
-      const followUpDate = dateObj1.toLocaleDateString("en-GB");
-      const followUpDate1 = dateObj2.toLocaleDateString("en-GB");
-    } else {
-      console.error("Datepicker instance is not initialized.");
+    if (addLeadsData.mobile.length != 10) {
+      setErrors((prev) => ({ ...prev, mobile: true }));
+      valid = false;
+    }
+    if (
+      !addLeadsData.email.includes("@gmail.com") ||
+      addLeadsData.email.length === 0
+    ) {
+      setErrors((prev) => ({ ...prev, email: true }));
+      valid = false;
+    }
+    if (
+      addLeadsData.executiveName.length > 15 ||
+      addLeadsData.executiveName.length === 0
+    ) {
+      setErrors((prev) => ({ ...prev, executiveName: true }));
+      valid = false;
+    }
+    if (addLeadsData.dealStage.length == "") {
+      setErrors((prev) => ({ ...prev, dealStage: true }));
+      valid = false;
+    }
+    if (addLeadsData.followUpDate == "") {
+      setErrors((prev) => ({ ...prev, followUpDate: true }));
+      valid = false;
+    }
+    if (addLeadsData.expectedClosureDate == "") {
+      setErrors((prev) => ({ ...prev, expectedClosureDate: true }));
+      valid = false;
+    }
+    if (addLeadsData.package == "") {
+      setErrors((prev) => ({ ...prev, package: true }));
+      valid = false;
+    }
+    if (
+      addLeadsData.plannedNoOfDays > 30 ||
+      addLeadsData.plannedNoOfDays.length === 0
+    ) {
+      setErrors((prev) => ({ ...prev, plannedNoOfDays: true }));
+      valid = false;
+    }
+    if (addLeadsData.destination == "") {
+      setErrors((prev) => ({ ...prev, destination: true }));
+      valid = false;
+    }
+    if (addLeadsData.billingAmount == "") {
+      setErrors((prev) => ({ ...prev, billingAmount: true }));
+      valid = false;
+    }
+    if (addLeadsData.paid == "") {
+      setErrors((prev) => ({ ...prev, paid: true }));
+      valid = false;
+    }
+    if (addLeadsData.balanceAmount == "") {
+      setErrors((prev) => ({ ...prev, balanceAmount: true }));
+      valid = false;
+    }
+    return valid;
+  }
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!validate()) return console.log("error in form validation");
+    try {
+      const followUpDate = new Date(addLeadsData.followUpDate);
+      const expectedClosureDate = new Date(addLeadsData.expectedClosureDate);
+      const dataToSend = {
+        ...addLeadsData,
+        followUpDate,
+        expectedClosureDate,
+      };
+      const sendDeals = await axios.post(
+        "http://localhost:4000/leads/addLeads",
+        dataToSend,
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+    } catch (err) {
+      console.log(err);
+    } finally {
+      navigate("/leads");
     }
   };
 
@@ -97,26 +153,41 @@ const AddLeads = () => {
             Primary Information
           </h1>
           <div className="w-full bg-[#FFFFFF] gap-x-4  w- text-black flex flex-wrap gap-y-6  p-5  items-center">
-            <InputBox
-              label={"First Name"}
-              type={"text"}
-              placeholder={"John"}
-              name={"firstName"}
-              inputWidth={"w-[23%]"}
-              className={
-                "px-3 py-3 border-none ring-1  ring-gray-300 w-full text-xs rounded-sm focus:ring-2 focus:ring-blue-500 outline-none"
-              }
-            />
-            <InputBox
-              label={"Last Name"}
-              type={"text"}
-              placeholder={"Doe"}
-              name={"lastName"}
-              inputWidth={"w-[23%]"}
-              className={
-                "px-3 py-3 border-none ring-1 ring-gray-300 w-full text-xs rounded-sm focus:ring-2 focus:ring-blue-500 outline-none"
-              }
-            />
+            <div className="w-[23%] flex flex-col">
+              <label className="roboto-semibold  text-sm mb-2">
+                First Name
+              </label>
+              <input
+                type="text"
+                name="firstName"
+                className="px-3 py-3 border-none ring-1  ring-gray-300 w-full text-xs rounded-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                placeholder={"John"}
+              ></input>
+              {errors && errors.firstName ? (
+                <p className="text-xs text-red-600">
+                  FirstName must be 3 characters above
+                </p>
+              ) : (
+                <p className="h-4"></p>
+              )}
+            </div>
+            <div className="w-[23%] flex flex-col">
+              <label className="roboto-semibold  text-sm mb-2">Last Name</label>
+              <input
+                type="text"
+                name="lastName"
+                className="px-3 py-3 border-none ring-1  ring-gray-300 w-full text-xs rounded-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                placeholder={"Doe"}
+              ></input>
+              {errors && errors.lastName ? (
+                <p className="text-xs text-red-600">
+                  LastName must be 10 characters below
+                </p>
+              ) : (
+                <p className="h-4"></p>
+              )}
+            </div>
+
             <div className="flex flex-col flex-wrap w-[30%]">
               <label
                 htmlFor="countries"
@@ -132,43 +203,73 @@ const AddLeads = () => {
                 <option hidden disabled selected>
                   Enquiry Type
                 </option>
-                <option value="Flight Booking">Flight</option>
-                <option value="Canceled">Canceled</option>
-                <option value="Proposal Sent">Proposal Sent</option>
-                <option value="Meeting Fixed">Meeting Fixed</option>
-                <option value="Yes To Confirm">Yes to Confirm </option>
+                <option value="Flight Booking">Flight Booking</option>
+                <option value="Hotel Booking">Hotel Booking</option>
+                <option value="Sight Seeing">Sight Seeing</option>
+                <option value="Transport">Transport</option>
+                <option value="Others">Others</option>
               </select>
+              {errors && errors.enquiryType ? (
+                <p className="text-xs text-red-600">Enquiry Type is required</p>
+              ) : (
+                <p className="h-4"></p>
+              )}
             </div>
-            <InputBox
-              label={"Mobile Phone"}
-              type={"text"}
-              inputWidth={"w-[27%]"}
-              name={"mobileNumber"}
-              placeholder={"Enter Your Phone Number"}
-              className={
-                "px-3 py-3 border-none ring-1 ring-gray-300 w-full text-xs rounded-sm focus:ring-2 focus:ring-blue-500 outline-none"
-              }
-            />
-            <InputBox
-              label={"Email"}
-              type={"email"}
-              inputWidth={"w-[27%]"}
-              name={"email"}
-              placeholder={"example@email.com"}
-              className={
-                "px-3 py-3 border-none ring-1 ring-gray-300 w-full  text-xs rounded-sm focus:ring-2 focus:ring-blue-500 outline-none"
-              }
-            />
-            <InputBox
-              label={"Executive Name"}
-              type={"text"}
-              inputWidth={"w-[27%]"}
-              name={"executive"}
-              placeholder={"Executive Name"}
-              className={
-                "px-3 py-3 border-none ring-1 ring-gray-300 w-full  text-xs rounded-sm focus:ring-2 focus:ring-blue-500 outline-none"
-              }
-            />
+
+            <div className="w-[23%] flex flex-col">
+              <label className="roboto-semibold  text-sm mb-2">
+                Mobile Phone
+              </label>
+              <input
+                type="number"
+                name="mobile"
+                className="px-3 py-3 border-none ring-1  ring-gray-300 w-full text-xs rounded-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                placeholder="Enter Your Phone Numbe"
+              ></input>
+
+              {errors && errors.mobile ? (
+                <p className="text-xs text-red-600">
+                  Mobile Number must be 10 digits
+                </p>
+              ) : (
+                <p className="h-4"></p>
+              )}
+            </div>
+
+            <div className="w-[25%] flex flex-col">
+              <label className="roboto-semibold  text-sm mb-2">Email</label>
+              <input
+                type="email"
+                name="email"
+                className="px-3 py-3 border-none ring-1  ring-gray-300 w-full text-xs rounded-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                placeholder="example@email.com"
+              ></input>
+
+              {errors && errors.email ? (
+                <p className="text-xs text-red-600">Email must be valid</p>
+              ) : (
+                <p className="h-4"></p>
+              )}
+            </div>
+
+            <div className="w-[25%] flex flex-col">
+              <label className="roboto-semibold  text-sm mb-2">
+                Executive Name
+              </label>
+              <input
+                type="text"
+                name="executiveName"
+                className="px-3 py-3 border-none ring-1  ring-gray-300 w-full text-xs rounded-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                placeholder="Executive Name"
+              ></input>
+              {errors && errors.executiveName ? (
+                <p className="text-xs text-red-600">
+                  Executive Name must be 15 characters below
+                </p>
+              ) : (
+                <p className="h-4"></p>
+              )}
+            </div>
           </div>
         </section>
         <section className="my-1 ">
@@ -192,34 +293,48 @@ const AddLeads = () => {
                   Deal Stage
                 </option>
                 <option value="Converted To Deal">Converted to Deal</option>
-                <option value="Canceled">Canceled</option>
+                <option value="Cancelled">Cancelled</option>
                 <option value="Proposal Sent">Proposal Sent</option>
                 <option value="Meeting Fixed">Meeting Fixed</option>
-                <option value="yes To Confirm">Yes to Confirm </option>
+                <option value="Yes To Confirm">Yes to Confirm </option>
               </select>
+              {errors && errors.dealStage ? (
+                <p className="text-xs text-red-600">dealStage required</p>
+              ) : (
+                <p className="h-4"></p>
+              )}
             </div>
 
-            <InputBox
-              label={"Deal Value"}
-              type={"text"}
-              name={"dealValue"}
-              inputWidth={"w-[23%]"}
-              placeholder={"Deal Value"}
-              className={
-                "px-3 py-3 border-none ring-1 ring-gray-300 w-full text-sm rounded-sm focus:ring-2 focus:ring-blue-500 outline-none"
-              }
-            />
+            <div className="w-[25%] flex flex-col">
+              <label className="roboto-semibold  text-sm mb-2">
+                Deal Value
+              </label>
+              <input
+                type="text"
+                name="dealValue"
+                className={
+                  "px-3 py-3 border-none ring-1 ring-gray-300 w-full text-sm rounded-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                }
+                placeholder="Deal Value"
+              ></input>
+
+              <p className="h-4"></p>
+            </div>
             <div className="flex flex-col w-[15%]">
               <label className={`  text-sm mb-2`}>Followup date</label>
               <div className="relative max-w-sm">
                 <input
-                  data-datepicker
-                  id="default-datepicker"
-                  type="text"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  placeholder="Select date"
-                />
-                <div className="absolute inset-y-0 right-2 flex items-center ps-3.5 pointer-events-none">
+                  type="date"
+                  name="followUpDate"
+                  placeholder="date"
+                  className="appearance-none"
+                ></input>
+                {errors && errors.followUpDate ? (
+                  <p className="text-xs text-red-600">Followup date required</p>
+                ) : (
+                  <p className="h-4"></p>
+                )}
+                {/*<div className="absolute inset-y-0 right-2 flex items-center ps-3.5 pointer-events-none">
                   <svg
                     width="25"
                     height="25"
@@ -232,20 +347,25 @@ const AddLeads = () => {
                       fill="#6E7491"
                     />
                   </svg>
-                </div>
+                </div>*/}
               </div>
             </div>
             <div className="flex flex-col w-[15%]">
               <label className={`  text-sm mb-2`}>Expected closure date</label>
               <div className="relative max-w-sm">
                 <input
-                  data-datepicker
-                  id="default-datepickertwo"
-                  type="text"
-                  className="bg-gray-50 border  border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  placeholder="Select date"
-                />
-                <div className="absolute inset-y-0 right-2 flex items-center ps-3.5 pointer-events-none">
+                  type="date"
+                  name="expectedClosureDate"
+                  placeholder="date"
+                ></input>
+                {errors && errors.expectedClosureDate ? (
+                  <p className="text-xs text-nowrap text-red-600">
+                    expectedClosureDate required{" "}
+                  </p>
+                ) : (
+                  <p className="h-4"></p>
+                )}
+                {/*<div className="absolute inset-y-0 right-2 flex items-center ps-3.5 pointer-events-none">
                   <svg
                     width="25"
                     height="25"
@@ -258,7 +378,7 @@ const AddLeads = () => {
                       fill="#6E7491"
                     />
                   </svg>
-                </div>
+                </div>*/}
               </div>
             </div>
           </div>
@@ -286,18 +406,33 @@ const AddLeads = () => {
                 <option value="Domestic">Domastic</option>
                 <option value="International">International</option>
               </select>
+              {errors && errors.package ? (
+                <p className="text-xs text-red-600">package is required</p>
+              ) : (
+                <p className="h-4"></p>
+              )}
             </div>
 
-            <InputBox
-              label={"Planned No of Days"}
-              type={"text"}
-              placeholder={"Planned No of Days"}
-              name={"plannedNoOfDays"}
-              inputWidth={"w-1/4"}
-              className={
-                "px-3 py-3 border-none ring-1 ring-gray-300 w-full text-sm rounded-sm focus:ring-2 focus:ring-blue-500 outline-none"
-              }
-            />
+            <div className="w-[25%] flex flex-col">
+              <label className="roboto-semibold  text-sm mb-2">
+                Planned No of Days
+              </label>
+              <input
+                type="text"
+                name="plannedNoOfDays"
+                className={
+                  "px-3 py-3 border-none ring-1 ring-gray-300 w-full text-sm rounded-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                }
+                placeholder="Planned No of Days"
+              ></input>
+              {errors && errors.plannedNoOfDays ? (
+                <p className="text-xs text-red-600">
+                  Planned No of days should be 30days below
+                </p>
+              ) : (
+                <p className="h-4"></p>
+              )}
+            </div>
             <div className="flex flex-col flex-wrap w-1/4">
               <label
                 htmlFor="countries"
@@ -319,6 +454,11 @@ const AddLeads = () => {
                 <option value="UK">UK</option>
                 <option value="Malta">Malta</option>
               </select>
+              {errors && errors.destination ? (
+                <p className="text-xs text-red-600">Destination is required</p>
+              ) : (
+                <p className="h-4"></p>
+              )}
             </div>
           </div>
         </section>
@@ -327,33 +467,67 @@ const AddLeads = () => {
             Budget
           </h1>
           <div className=" text-black px-5 flex gap-x-10 bg-white flex-wrap py-4  items-center">
-            <InputBox
-              label={"Billing Amount"}
-              type={"text"}
-              name={"billingAmount"}
-              inputWidth={"w-1/6 "}
-              className={
-                "px-3 py-3 border-none ring-1  ring-gray-300 w-full text-sm rounded-sm focus:ring-2 focus:ring-blue-500 outline-none"
-              }
-            />
-            <InputBox
-              label={"Paid"}
-              type={"text"}
-              name={"paid"}
-              inputWidth={"w-1/6 "}
-              className={
-                "px-3 py-3 border-none ring-1 ring-gray-300 w-full text-sm rounded-sm focus:ring-2 focus:ring-blue-500 outline-none"
-              }
-            />
-            <InputBox
-              label={"Balance Payment"}
-              type={"text"}
-              inputWidth={"w-1/6 "}
-              name={"balancePayment"}
-              className={
-                "px-3 py-3 border-none ring-1 ring-gray-300 w-full text-sm rounded-sm focus:ring-2 focus:ring-blue-500 outline-none"
-              }
-            />
+            <div className="w-[18%] flex flex-col">
+              <label className="roboto-semibold  text-sm mb-2">
+                Billing Amount
+              </label>
+              <input
+                type="text"
+                name="billingAmount"
+                className={
+                  "px-3 py-3 border-none ring-1  ring-gray-300 w-full text-sm rounded-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                }
+              ></input>
+              {errors && errors.billingAmount ? (
+                <p className="text-xs text-red-600">
+                  Billing amount is required
+                </p>
+              ) : (
+                <p className="h-4"></p>
+              )}
+            </div>
+
+            <div className="w-[18%] flex flex-col">
+              <label className="roboto-semibold  text-sm mb-2">Paid</label>
+              <input
+                type="text"
+                name="paid"
+                className={
+                  "px-3 py-3 border-none ring-1  ring-gray-300 w-full text-sm rounded-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                }
+              ></input>
+              {errors && errors.paid ? (
+                <p className="text-xs text-red-600">paid is required</p>
+              ) : (
+                <p className="h-4"></p>
+              )}
+            </div>
+
+            <div className="w-[18%] flex flex-col">
+              <label className="roboto-semibold  text-sm mb-2">
+                Balance Payment
+              </label>
+              <input
+                type="text"
+                name="balanceAmount"
+                className={
+                  "px-3 py-3 border-none ring-1  ring-gray-300 w-full text-sm rounded-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                }
+              ></input>
+              {errors && errors.balanceAmount ? (
+                <p className="text-xs text-red-600">
+                  BalancePayment is required
+                </p>
+              ) : (
+                <p className="h-4"></p>
+              )}
+            </div>
+            <button
+              onClick={() => navigate("/leads")}
+              className="bg-gray-800 px-6 py-3.5 text-white text-sm mt-6 poppins-medium  rounded-md"
+            >
+              Cancel
+            </button>
             <button className="bg-[#1B3C6D] px-6 py-3.5 text-white text-sm mt-6 poppins-medium  rounded-md">
               Submit
             </button>

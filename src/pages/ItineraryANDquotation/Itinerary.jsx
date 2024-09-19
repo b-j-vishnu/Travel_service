@@ -10,6 +10,8 @@ const Itinerary = () => {
   const ItineraryInformation = useSelector(
     (state) => state.Itinerary.ItineraryInformation
   );
+  const [checkBox, setCheckBox] = useState({});
+  const [allCheckBox, setAllCheckBox] = useState(false);
 
   useEffect(() => {
     dispatch(
@@ -221,7 +223,7 @@ const Itinerary = () => {
 
   const handleShowDrapdown = (index) => {
     setShowDropdown((prev) => ({
-      [index]: !prev[index], // Toggle the dropdown visibility
+      [index]: !prev[index],
     }));
   };
   const handleShowFilters = (e) => {
@@ -234,7 +236,18 @@ const Itinerary = () => {
     const filterEl = document.getElementById("ItineraryfilterEl");
     filterEl.classList.replace("block", "hidden");
   };
-
+  const handleCheckbox = (index) => {
+    setCheckBox((prev) => ({ ...prev, [index]: !prev[index] }));
+  };
+  const handleAllChecked = () => {
+    const indexes = ItineraryInformation.keys();
+    const checkbox = indexes.reduce((acc, value) => {
+      acc[value] = allCheckBox ? false : true;
+      return acc;
+    }, {});
+    setCheckBox(checkbox);
+    setAllCheckBox(!allCheckBox);
+  };
   return (
     <div className="w-full flex mt-16 justify-end mb-10 bg-gray-200 ">
       <div
@@ -319,6 +332,8 @@ const Itinerary = () => {
                   <th className="py-2 pl-4">
                     <input
                       type="checkbox"
+                      checked={allCheckBox}
+                      onChange={handleAllChecked}
                       className="w-4 rounded-[0.2rem] h-4"
                     />
                   </th>
@@ -337,9 +352,11 @@ const Itinerary = () => {
               <tbody className="">
                 {currentItems.map((person, index) => (
                   <tr key={index} className=" text-xs">
-                    <td className="pt-5 pl-4    ">
+                    <td className="pt-5 pl-4">
                       <input
                         type="checkbox"
+                        checked={checkBox[index]}
+                        onChange={() => handleCheckbox(index)}
                         className="w-4 rounded-[0.2rem] h-4"
                       />
                     </td>

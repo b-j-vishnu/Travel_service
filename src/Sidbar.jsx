@@ -155,7 +155,9 @@ const Sidbar = () => {
           <Link
             to="/itinerary"
             className={
-              path === "/itinerary" || path === "/itinerary/addItinerary"
+              path === "/itinerary" ||
+              path === "/itinerary/addItinerary" ||
+              path.includes("viewItinerary")
                 ? " lg:flex  bg-white text-black  w-full roboto-medium text-[0.8rem]  md:px-[0.1rem] md:py-1 lg:py-[0.5rem] lg:justify-normal lg:px-4 lg:items-center  lg:gap-x-1 rounded-md"
                 : `lg:flex  text-black  w-full roboto-medium text-[0.8rem]  md:px-[0.1rem] md:py-1 lg:py-[0.5rem]  lg:justify-normal lg:px-4 lg:items-center  lg:gap-x-1 rounded-md`
             }
@@ -219,7 +221,9 @@ const Sidbar = () => {
           <Link
             to="/invoice"
             className={
-              path === "/invoice" || path === "/invoice/addInvoice"
+              path === "/invoice" ||
+              path === "/invoice/addInvoice" ||
+              path.includes("viewInvoice")
                 ? " lg:flex  bg-white  w-full roboto-medium text-[0.8rem]  md:px-[0.1rem] md:py-1 lg:py-[0.5rem] lg:justify-normal lg:px-4 lg:items-center  lg:gap-x-1 rounded-md"
                 : `lg:flex w-full roboto-medium text-[0.8rem] md:px-[0.1rem] md:py-1 lg:py-[0.5rem] lg:justify-normal lg:px-4 lg:items-center  lg:gap-x-1 rounded-md`
             }
