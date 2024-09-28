@@ -1,6 +1,5 @@
 import { useState } from "react";
-//import Flatpickr from "react-flatpickr";
-import "flatpickr/dist/themes/material_blue.css";
+
 const AddFinance = () => {
   const [addFinanceData, setAddFinanceData] = useState({
     id: "",
@@ -15,40 +14,15 @@ const AddFinance = () => {
   });
   const handleChange = (e) => {
     const { name, value } = e.target;
+    console.log(name, value);
     setAddFinanceData((prev) => ({
       ...prev,
       [name]: value,
     }));
   };
 
-  const [time, setTime] = useState("00:00");
-  const [formattedTime, setFormattedTime] = useState("12:00 AM");
-  const handleTimeChange = (event) => {
-    const timeValue = event.target.value;
-    setTime(timeValue);
-    setFormattedTime(convertToAMPM(timeValue));
-  };
-
-  const convertToAMPM = (timeValue) => {
-    let [hours, minutes] = timeValue.split(":");
-    let period = "AM";
-
-    hours = parseInt(hours, 10);
-
-    if (hours >= 12) {
-      period = "PM";
-      if (hours > 12) {
-        hours -= 12;
-      }
-    } else if (hours === 0) {
-      hours = 12;
-    }
-
-    return `${hours}:${minutes} ${period}`;
-  };
-
   return (
-    <div className=" fixed w-1/4 px-7 rounded-l-md h-[100vh] right-0 top-0 z-50  overflow-y-auto  bg-[#1B3C6D]">
+    <div className=" fixed w-1/4 px-7 rounded-l-md h-[100vh] right-0 top-0 z-20  overflow-y-auto  bg-[#1B3C6D]">
       <h1 className=" text-sm my-6 text-white">Add Finance</h1>
       <form className="w-3/4 roboto-semibold mx-3" onChange={handleChange}>
         <div className="flex flex-col w-full">
@@ -100,18 +74,16 @@ const AddFinance = () => {
           type="text"
           placeholder="Type"
           name="totalAmount"
-          className="rounded-[0.3rem] mb-4 w-full text-[14px] roboto-medium   "
+          className="rounded-[0.3rem] mb-4 w-full text-[14px] roboto-medium"
         ></input>
-        <label className={`   text-blue-gray-100 text-sm  mb-1`}>Date</label>
         <div className="relative my-2 max-w-sm">
+          <label className="text-blue-gray-100 text-sm  mb-1">Date</label>
           <input
-            data-datepicker
-            id="datepicker-orientation"
-            type="text"
+            type="date"
             className="bg-gray-50 border  border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full  py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
             placeholder="Select date"
           />
-          <div className="absolute inset-y-0 right-2 flex items-center ps-3.5 pointer-events-none">
+          {/*<div className="absolute inset-y-0 right-2 flex items-center ps-3.5 pointer-events-none">
             <svg
               width="25"
               height="25"
@@ -124,7 +96,7 @@ const AddFinance = () => {
                 fill="#6E7491"
               />
             </svg>
-          </div>
+          </div>*/}
         </div>
 
         <label
@@ -140,8 +112,6 @@ const AddFinance = () => {
             min="09:00"
             id="time"
             max="18:00"
-            value={time}
-            onChange={handleTimeChange}
             required
           />
           <span className="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border rounded-s-0 border-s-0 border-gray-300 rounded-e-md dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">

@@ -5,7 +5,6 @@ import { useEffect } from "react";
 
 // eslint-disable-next-line react/prop-types
 const FinanceFilter = ({ InvoiceInformation }) => {
-  const datepicker = useRef(null);
   const [filterOptions, setFilterOptions] = useState({
     time: "",
     date: "",
@@ -14,69 +13,9 @@ const FinanceFilter = ({ InvoiceInformation }) => {
     userId: "",
   });
 
-  const [time, setTime] = useState("00:00");
-  const [formattedTime, setFormattedTime] = useState("12:00 AM");
-  const handleTimeChange = (event) => {
-    const timeValue = event.target.value;
-    setTime(timeValue);
-    setFormattedTime(convertToAMPM(timeValue));
-  };
-
-  const convertToAMPM = (timeValue) => {
-    let [hours, minutes] = timeValue.split(":");
-    let period = "AM";
-
-    hours = parseInt(hours, 10);
-
-    if (hours >= 12) {
-      period = "PM";
-      if (hours > 12) {
-        hours -= 12;
-      }
-    } else if (hours === 0) {
-      hours = 12;
-    }
-
-    return `${hours}:${minutes} ${period}`;
-  };
-  useEffect(() => {
-    const $datepickerEl = document.getElementById("datepicker-orientation");
-    const options = {
-      defaultDatepickerId: null,
-      autohide: false,
-      format: "dd/mm/yyyy",
-      maxDate: null,
-      minDate: null,
-      orientation: "bottom",
-      buttons: false,
-      autoSelectToday: false,
-      title: null,
-      rangePicker: false,
-      onShow: () => {},
-      onHide: () => {},
-    };
-
-    const instanceOptions = {
-      id: "datepicker-orientation",
-      override: true,
-    };
-    datepicker.current = new Datepicker(
-      $datepickerEl,
-      options,
-      instanceOptions
-    );
-  }, []);
-
   const handleSubmit = (e) => {
     e.preventDefault();
-    const date = new Date(datepicker.current?.getDate());
-    const options = { year: "numeric", month: "short", day: "numeric" };
-    const formattedDate = date.toLocaleDateString("en-US", options);
-    console.log({
-      ...filterOptions,
-      total: Number(filterOptions.total),
-      date: formattedDate,
-    });
+    console.log(filterOptions);
   };
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -103,10 +42,6 @@ const FinanceFilter = ({ InvoiceInformation }) => {
             className="rounded-none rounded-s-lg bg-gray-50 border text-gray-900 leading-none focus:ring-blue-500 focus:border-blue-500 block flex-1 w-full text-sm border-gray-300 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
             min="09:00"
             max="18:00"
-            placeholder="hiii"
-            value={time}
-            onChange={handleTimeChange}
-            required
           />
           <span className="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border rounded-s-0 border-s-0 border-gray-300 rounded-e-md dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
             <svg
@@ -132,13 +67,11 @@ const FinanceFilter = ({ InvoiceInformation }) => {
           </label>
           <div className="relative max-w-sm">
             <input
-              data-datepicker
-              id="datepicker-orientation"
-              type="text"
+              type="date"
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full  py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               placeholder="Select date"
             />
-            <div className="absolute inset-y-0 right-2 flex items-center ps-3.5 pointer-events-none">
+            {/*<div className="absolute inset-y-0 right-2 flex items-center ps-3.5 pointer-events-none">
               <svg
                 width="25"
                 height="25"
@@ -151,7 +84,7 @@ const FinanceFilter = ({ InvoiceInformation }) => {
                   fill="#6E7491"
                 />
               </svg>
-            </div>
+            </div>*/}
           </div>
         </div>
         <label

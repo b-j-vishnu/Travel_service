@@ -36,7 +36,6 @@ const Leads = () => {
     setShowDropdown((prev) => ({ [id]: !prev[id] }));
     e.stopPropagation();
   };
-  console.log(showDropdown);
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -98,12 +97,13 @@ const Leads = () => {
           },
         }
       );
+      if (response.status === 200) {
+        setTriggerRender(!triggerRender);
+        setCheckBox(!checkBox);
+        toast.success("successfull deleted");
+      }
     } catch (err) {
       console.log(err);
-    } finally {
-      setTriggerRender(!triggerRender);
-      setCheckBox(!checkBox);
-      toast.success("successfull deleted");
     }
   };
 
@@ -113,12 +113,13 @@ const Leads = () => {
       const response = await axios.delete(
         `http://localhost:4000/leads/deleteLead/${encodedUserId}`
       );
+      if (response.status === 200) {
+        setTriggerRender(!triggerRender);
+        toast.success("successfull deleted");
+      }
       console.log(response.data.message);
     } catch (err) {
       console.log(err.message);
-    } finally {
-      setTriggerRender(!triggerRender);
-      toast.success("successfull deleted");
     }
   };
   return (
@@ -219,6 +220,7 @@ const Leads = () => {
                       <th className="py-2 pl-4">
                         <input
                           type="checkbox"
+                          checked={checkBox}
                           onChange={handleAllChecked}
                           className="rounded-[0.2rem] focus:ring-0 w-4 h-4"
                         />
@@ -255,7 +257,7 @@ const Leads = () => {
                         </td>
                         <td className="flex items-center relative pt-5  text-sm">
                           <p className=" poppins-bold  px-1">
-                            {person.firstName}
+                            {`${person.firstName} ${person.lastName}`}
                           </p>
                           <svg
                             width="12"
@@ -296,7 +298,14 @@ const Leads = () => {
                                 <button type="button">Add Note</button>
                               </li>
                               <li className="my-2 bg-gray-300 rounded-md p-2">
-                                <button type="button">Edit</button>
+                                <Link
+                                  to={`/leads/edit/${person.userId.replace(
+                                    "#",
+                                    ""
+                                  )}`}
+                                >
+                                  Edit
+                                </Link>
                               </li>
                               <li className="my-2 bg-gray-300 rounded-md p-2">
                                 <button
@@ -321,7 +330,7 @@ const Leads = () => {
                           className="pt-5  text-start"
                           style={{ color: `#${person.textColor}` }}
                         >
-                          {person.dealStage}
+                          {person.stage}
                         </td>
                       </tr>
                     ))}
@@ -441,7 +450,7 @@ const Leads = () => {
                 <p>
                   Deal Stage:{" "}
                   <span className="text-xs text-gray-300 mx-2">
-                    {viewPerson.dealStage}
+                    {viewPerson.stage}
                   </span>
                 </p>
                 <p className="my-1">

@@ -1,18 +1,23 @@
 import { useEffect, useState } from "react";
 import InputBox from "./InputBox";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
-const AddLeads = () => {
+import { useNavigate, useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
+const AddLeads = ({ mode }) => {
+  const LeadsInformations = useSelector(
+    (state) => state.leads.LeadsInformation
+  );
   const navigate = useNavigate();
   const [errors, setErrors] = useState({});
+  const params = useParams();
 
-  const initialState = {
+  const [leadsData, setLeadsData] = useState({
     firstName: "",
     lastName: "",
     enquiryType: "",
     mobile: "",
     email: "",
-    dealStage: "",
+    stage: "",
     dealValue: "",
     package: "",
     followUpDate: "",
@@ -22,13 +27,29 @@ const AddLeads = () => {
     destination: "",
     billingAmount: "",
     paid: "",
-    balanceAmount: "",
-  };
-  const [addLeadsData, setAddLeadsData] = useState(initialState);
+    balancePayment: "",
+  });
+  useEffect(() => {
+    if (mode === "edit") {
+      const userId = `#${params.id}`;
+      const leadToEdit = LeadsInformations.find(
+        (data) => data.userId == userId
+      );
+      const data = {
+        ...leadToEdit,
+        followUpDate: leadToEdit.followUpDate.split("T")[0],
+        mobile: leadToEdit.mobile,
+        expectedClosureDate: leadToEdit.expectedClosureDate.split("T")[0],
+      };
+
+      setLeadsData(data);
+    }
+  }, [LeadsInformations]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     console.log(name, value);
-    setAddLeadsData((prev) => ({
+    setLeadsData((prev) => ({
       ...prev,
       [name]: value,
     }));
@@ -37,106 +58,114 @@ const AddLeads = () => {
 
   function validate() {
     let valid = true;
-    if (
-      addLeadsData.firstName.length < 3 ||
-      addLeadsData.firstName.length == 0
-    ) {
+    if (leadsData.firstName.length < 3 || leadsData.firstName.length == 0) {
       setErrors((prev) => ({ ...prev, firstName: true }));
       valid = false;
     }
-    if (
-      addLeadsData.lastName.length > 10 ||
-      addLeadsData.lastName.length == 0
-    ) {
+    if (leadsData.lastName.length > 10 || leadsData.lastName.length == 0) {
       setErrors((prev) => ({ ...prev, lastName: true }));
       valid = false;
     }
-    if (addLeadsData.enquiryType.length == "") {
+    if (leadsData.enquiryType.length == "") {
       setErrors((prev) => ({ ...prev, enquiryType: true }));
       valid = false;
     }
 
-    if (addLeadsData.mobile.length != 10) {
+    if (String(leadsData.mobile).length !== 10) {
+      console.log(leadsData.mobile.length);
       setErrors((prev) => ({ ...prev, mobile: true }));
       valid = false;
     }
     if (
-      !addLeadsData.email.includes("@gmail.com") ||
-      addLeadsData.email.length === 0
+      !leadsData.email.includes("@gmail.com") ||
+      leadsData.email.length === 0
     ) {
       setErrors((prev) => ({ ...prev, email: true }));
       valid = false;
     }
     if (
-      addLeadsData.executiveName.length > 15 ||
-      addLeadsData.executiveName.length === 0
+      leadsData.executiveName.length > 15 ||
+      leadsData.executiveName.length === 0
     ) {
       setErrors((prev) => ({ ...prev, executiveName: true }));
       valid = false;
     }
-    if (addLeadsData.dealStage.length == "") {
-      setErrors((prev) => ({ ...prev, dealStage: true }));
+    if (leadsData.stage.length == "") {
+      setErrors((prev) => ({ ...prev, stage: true }));
       valid = false;
     }
-    if (addLeadsData.followUpDate == "") {
+    if (leadsData.followUpDate == "") {
       setErrors((prev) => ({ ...prev, followUpDate: true }));
       valid = false;
     }
-    if (addLeadsData.expectedClosureDate == "") {
+    if (leadsData.expectedClosureDate == "") {
       setErrors((prev) => ({ ...prev, expectedClosureDate: true }));
       valid = false;
     }
-    if (addLeadsData.package == "") {
+    if (leadsData.package == "") {
       setErrors((prev) => ({ ...prev, package: true }));
       valid = false;
     }
     if (
-      addLeadsData.plannedNoOfDays > 30 ||
-      addLeadsData.plannedNoOfDays.length === 0
+      leadsData.plannedNoOfDays > 30 ||
+      leadsData.plannedNoOfDays.length === 0
     ) {
       setErrors((prev) => ({ ...prev, plannedNoOfDays: true }));
       valid = false;
     }
-    if (addLeadsData.destination == "") {
+    if (leadsData.destination == "") {
       setErrors((prev) => ({ ...prev, destination: true }));
       valid = false;
     }
-    if (addLeadsData.billingAmount == "") {
+    if (leadsData.billingAmount == "") {
       setErrors((prev) => ({ ...prev, billingAmount: true }));
       valid = false;
     }
-    if (addLeadsData.paid == "") {
+    if (leadsData.paid == "") {
       setErrors((prev) => ({ ...prev, paid: true }));
       valid = false;
     }
-    if (addLeadsData.balanceAmount == "") {
-      setErrors((prev) => ({ ...prev, balanceAmount: true }));
+    if (leadsData.balancePayment == "") {
+      setErrors((prev) => ({ ...prev, balancePayment: true }));
       valid = false;
     }
     return valid;
   }
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log(leadsData);
+
     if (!validate()) return console.log("error in form validation");
-    try {
-      const followUpDate = new Date(addLeadsData.followUpDate);
-      const expectedClosureDate = new Date(addLeadsData.expectedClosureDate);
-      const dataToSend = {
-        ...addLeadsData,
-        followUpDate,
-        expectedClosureDate,
-      };
-      const sendDeals = await axios.post(
-        "http://localhost:4000/leads/addLeads",
-        dataToSend,
-        {
-          headers: { "Content-Type": "application/json" },
+    if (mode === "add") {
+      try {
+        const response = await axios.post(
+          "http://localhost:4000/leads/addLeads",
+          leadsData,
+          {
+            headers: { "Content-Type": "application/json" },
+          }
+        );
+        console.log(response);
+        if (response.status === 200) {
+          navigate("/leads");
         }
-      );
-    } catch (err) {
-      console.log(err);
-    } finally {
-      navigate("/leads");
+      } catch (err) {
+        console.log(err);
+      }
+    } else {
+      try {
+        const userId = `#${params.id}`;
+        const encodedUserId = encodeURIComponent(userId); // Ensures #42 is encoded as %2342
+        const response = await axios.put(
+          `http://localhost:4000/leads/editLead/${encodedUserId}`,
+          leadsData
+        );
+        if (response.status === 200) {
+          navigate("/leads");
+        }
+      } catch (err) {
+        console.log(err);
+      }
     }
   };
 
@@ -147,7 +176,10 @@ const AddLeads = () => {
         onSubmit={handleSubmit}
         className="md:w-[93%] px-1 lg:w-[80%] my-6 items-end"
       >
-        <h1 className="poppins-semibold text-lg">Add Leads</h1>
+        <h1 className="poppins-semibold text-lg">
+          {mode === "add" ? "Add Leads" : "Edit Leads"}
+        </h1>
+
         <section className="my-1 roboto-semibold">
           <h1 className="bg-[#003E78] py-2 px-6 text-white text-lg rounded-t-lg">
             Primary Information
@@ -160,6 +192,7 @@ const AddLeads = () => {
               <input
                 type="text"
                 name="firstName"
+                value={leadsData.firstName}
                 className="px-3 py-3 border-none ring-1  ring-gray-300 w-full text-xs rounded-sm focus:ring-2 focus:ring-blue-500 outline-none"
                 placeholder={"John"}
               ></input>
@@ -175,6 +208,7 @@ const AddLeads = () => {
               <label className="roboto-semibold  text-sm mb-2">Last Name</label>
               <input
                 type="text"
+                value={leadsData && leadsData.lastName}
                 name="lastName"
                 className="px-3 py-3 border-none ring-1  ring-gray-300 w-full text-xs rounded-sm focus:ring-2 focus:ring-blue-500 outline-none"
                 placeholder={"Doe"}
@@ -197,10 +231,11 @@ const AddLeads = () => {
               </label>
               <select
                 id="countries"
+                value={leadsData.enquiryType}
                 name="enquiryType"
                 className="bg-gray-50 w-11/12 border-gray-300 text-gray-400 text-[14px]  rounded-[0.3rem] focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               >
-                <option hidden disabled selected>
+                <option hidden selected>
                   Enquiry Type
                 </option>
                 <option value="Flight Booking">Flight Booking</option>
@@ -222,9 +257,10 @@ const AddLeads = () => {
               </label>
               <input
                 type="number"
+                value={leadsData.mobile}
                 name="mobile"
                 className="px-3 py-3 border-none ring-1  ring-gray-300 w-full text-xs rounded-sm focus:ring-2 focus:ring-blue-500 outline-none"
-                placeholder="Enter Your Phone Numbe"
+                placeholder="Enter Your Phone Number"
               ></input>
 
               {errors && errors.mobile ? (
@@ -241,6 +277,7 @@ const AddLeads = () => {
               <input
                 type="email"
                 name="email"
+                value={leadsData.email}
                 className="px-3 py-3 border-none ring-1  ring-gray-300 w-full text-xs rounded-sm focus:ring-2 focus:ring-blue-500 outline-none"
                 placeholder="example@email.com"
               ></input>
@@ -259,6 +296,7 @@ const AddLeads = () => {
               <input
                 type="text"
                 name="executiveName"
+                value={leadsData.executiveName}
                 className="px-3 py-3 border-none ring-1  ring-gray-300 w-full text-xs rounded-sm focus:ring-2 focus:ring-blue-500 outline-none"
                 placeholder="Executive Name"
               ></input>
@@ -286,10 +324,11 @@ const AddLeads = () => {
               </label>
               <select
                 id="countries"
-                name="dealStage"
+                name="stage"
+                value={leadsData.stage}
                 className="bg-gray-50 w-full roboto-semibold border-gray-300 text-[14px]  rounded-[0.3rem] focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               >
-                <option style={{ opacity: 0.3 }} hidden disabled selected>
+                <option style={{ opacity: 0.3 }} hidden selected>
                   Deal Stage
                 </option>
                 <option value="Converted To Deal">Converted to Deal</option>
@@ -298,8 +337,8 @@ const AddLeads = () => {
                 <option value="Meeting Fixed">Meeting Fixed</option>
                 <option value="Yes To Confirm">Yes to Confirm </option>
               </select>
-              {errors && errors.dealStage ? (
-                <p className="text-xs text-red-600">dealStage required</p>
+              {errors && errors.stage ? (
+                <p className="text-xs text-red-600">stage required</p>
               ) : (
                 <p className="h-4"></p>
               )}
@@ -311,6 +350,7 @@ const AddLeads = () => {
               </label>
               <input
                 type="text"
+                value={leadsData.dealValue}
                 name="dealValue"
                 className={
                   "px-3 py-3 border-none ring-1 ring-gray-300 w-full text-sm rounded-sm focus:ring-2 focus:ring-blue-500 outline-none"
@@ -325,6 +365,7 @@ const AddLeads = () => {
               <div className="relative max-w-sm">
                 <input
                   type="date"
+                  value={leadsData.followUpDate}
                   name="followUpDate"
                   placeholder="date"
                   className="appearance-none"
@@ -356,11 +397,12 @@ const AddLeads = () => {
                 <input
                   type="date"
                   name="expectedClosureDate"
+                  value={leadsData.expectedClosureDate}
                   placeholder="date"
                 ></input>
                 {errors && errors.expectedClosureDate ? (
                   <p className="text-xs text-nowrap text-red-600">
-                    expectedClosureDate required{" "}
+                    expectedClosureDate required
                   </p>
                 ) : (
                   <p className="h-4"></p>
@@ -398,9 +440,10 @@ const AddLeads = () => {
               <select
                 id="countries"
                 name="package"
+                value={leadsData.package}
                 className="bg-gray-50 w-full border-gray-300 text-[14px]  rounded-[0.3rem] focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               >
-                <option hidden disabled selected>
+                <option hidden selected>
                   Package
                 </option>
                 <option value="Domestic">Domastic</option>
@@ -419,6 +462,7 @@ const AddLeads = () => {
               </label>
               <input
                 type="text"
+                value={leadsData.plannedNoOfDays}
                 name="plannedNoOfDays"
                 className={
                   "px-3 py-3 border-none ring-1 ring-gray-300 w-full text-sm rounded-sm focus:ring-2 focus:ring-blue-500 outline-none"
@@ -443,9 +487,10 @@ const AddLeads = () => {
               <select
                 id="countries"
                 name="destination"
+                value={leadsData.destination}
                 className="bg-gray-50 w-full border-gray-300 text-gray-400 text-[14px]  rounded-[0.3rem] focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               >
-                <option hidden disabled selected>
+                <option hidden selected>
                   Destination
                 </option>
                 <option value="Dubai">Dubai</option>
@@ -474,6 +519,7 @@ const AddLeads = () => {
               <input
                 type="text"
                 name="billingAmount"
+                value={leadsData.billingAmount}
                 className={
                   "px-3 py-3 border-none ring-1  ring-gray-300 w-full text-sm rounded-sm focus:ring-2 focus:ring-blue-500 outline-none"
                 }
@@ -491,6 +537,7 @@ const AddLeads = () => {
               <label className="roboto-semibold  text-sm mb-2">Paid</label>
               <input
                 type="text"
+                value={leadsData.paid}
                 name="paid"
                 className={
                   "px-3 py-3 border-none ring-1  ring-gray-300 w-full text-sm rounded-sm focus:ring-2 focus:ring-blue-500 outline-none"
@@ -509,12 +556,13 @@ const AddLeads = () => {
               </label>
               <input
                 type="text"
-                name="balanceAmount"
+                name="balancePayment"
+                value={leadsData.balancePayment}
                 className={
                   "px-3 py-3 border-none ring-1  ring-gray-300 w-full text-sm rounded-sm focus:ring-2 focus:ring-blue-500 outline-none"
                 }
               ></input>
-              {errors && errors.balanceAmount ? (
+              {errors && errors.balancePayment ? (
                 <p className="text-xs text-red-600">
                   BalancePayment is required
                 </p>

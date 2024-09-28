@@ -7,7 +7,7 @@ import { getLeads } from "../../Actions/LeadsActions";
 const LeadsFilters = ({ leadsInformation, handleHideFilter }) => {
   const dispatch = useDispatch();
   const [filterOptions, setFilterOptions] = useState({
-    dealStage: "",
+    stage: "",
     enquiryType: "",
     package: "",
     mobileNumber: "",
@@ -36,15 +36,15 @@ const LeadsFilters = ({ leadsInformation, handleHideFilter }) => {
         onSubmit={handleSubmit}
       >
         <label
-          htmlFor="dealStage"
+          htmlFor="stage"
           className="block  roboto-bold text-xs mb-2  text-gray-100  font-medium dark:text-white"
         >
           Deal Stage
         </label>
         <select
-          id="dealStage"
-          name="dealStage"
-          value={filterOptions.dealStage}
+          id="stage"
+          name="stage"
+          value={filterOptions.stage}
           className="bg-gray-50 borde border-gray-300 text-gray-900 text-[14px] roboto-medium rounded-[0.3rem] focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
         >
           <option hidden selected>
@@ -52,7 +52,7 @@ const LeadsFilters = ({ leadsInformation, handleHideFilter }) => {
           </option>
           <option value="Converted To Deal"> Converted to Deal</option>
           <option value="Cancelled">Cancelled</option>
-          <option value="proposal Sent">Proposal Sent</option>
+          <option value="Proposal Sent">Proposal Sent</option>
           <option value="Meeting Fixed">Meeting Fixed</option>
           <option value="Yes To Confirm">Yes to Confirm </option>
         </select>

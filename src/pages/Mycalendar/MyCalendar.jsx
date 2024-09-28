@@ -237,36 +237,12 @@ const MyCalander = () => {
                 value={eventFormDetails.end}
               />
             </div>
-            <div className="w-full mt-2">
-              <p className="my-2">Choose Color</p>
-              <div className="w-full flex gap-x-5 relative items-center">
-                <div className={String.raw`w-4 h-4 ${colors[0]}`}></div>
-                <ul className="w-10 top-5 absolute">
-                  {color
-                    ? colors.map((color, index) => (
-                        <li
-                          key={index}
-                          className="w-[40%] first:hidden flex flex-col items-center"
-                        >
-                          <div
-                            className={String.raw`w-4 h-4 ${color}`}
-                            onClick={() => handleChangeColor(color, index)}
-                          ></div>
-                        </li>
-                      ))
-                    : null}
-                </ul>
-                <svg
-                  onClick={() => setColor(!color)}
-                  width="10"
-                  height="5"
-                  viewBox="0 0 10 5"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path d="M0 0L4.84032 5L9.68064 0H0Z" fill="white" />
-                </svg>
-              </div>
+            <div className="w-full mt-2 flex flex-col">
+              <label className="my-2 ">Choose Color</label>
+              <input
+                type="color"
+                className="w-6 border-none outline-none appearance-none"
+              ></input>
             </div>
             <div className="w-full my-2">
               <p>Note</p>

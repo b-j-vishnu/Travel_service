@@ -1,1 +1,2 @@
 export const GET_INVOICE_DETAILS = "GET_INVOICE_DETAILS";
+export const ADD_INVOICES = "ADD_INVOICES";

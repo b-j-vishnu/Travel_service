@@ -1,8 +1,14 @@
+import { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 const ViewItinerary = () => {
+  const Itineraries = useSelector(
+    (state) => state.Itinerary.ItineraryInformation
+  );
   let { id } = useParams();
-  console.log(`#${id}`);
-
+  const [view, setView] = useState();
+  const dataToView = Itineraries.find((data) => data.userId === `#${id}`);
+  console.log(dataToView);
   return (
     <div className="w-full flex mt-16 justify-end mb-10 bg-gray-200 ">
       <div className="md:w-[93%] text-black  lg:w-[80%]   items-end bg-gray-100">
@@ -77,13 +83,13 @@ const ViewItinerary = () => {
               <p className="roboto-medium mt-2">Proposal to:</p>
             </div>
             <div>
-              <p className="roboto-light mt-1">Rathika</p>
+              <p className="roboto-light mt-1"> {dataToView.firstName}</p>
             </div>
             <div>
-              <p className="roboto-light mt-1">shoppingkalatta@gmail.com</p>
+              <p className="roboto-light mt-1"> {dataToView.email}</p>
             </div>
             <div>
-              <p className="roboto-light mt-1">Phone: 9948658940</p>
+              <p className="roboto-light mt-1">Phone: {dataToView.mobile}</p>
             </div>
           </div>
           <div className="my-7">

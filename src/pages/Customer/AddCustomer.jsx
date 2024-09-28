@@ -1,92 +1,189 @@
-/* eslint-disable no-unused-vars */
-import { useEffect, useState, useRef } from "react";
-import InputBox from "../Leads/InputBox";
-import { Datepicker } from "flowbite";
-import "flowbite/dist/flowbite.min.css";
+import { useEffect, useState } from "react";
+import moment from "moment-timezone";
+import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
+import axios from "axios";
+import { useSelector } from "react-redux";
+const AddCustomer = ({ mode }) => {
+  const navigate = useNavigate();
+  const [errors, setErrors] = useState({});
+  const params = useParams();
 
-const AddCustomer = () => {
-  const datepickerRef = useRef(null);
-  const datepickerRef2 = useRef(null);
-  const [addCustomer, setAddCustomer] = useState({
+  const CustomerInformation = useSelector(
+    (state) => state.customer.customerInformation
+  );
+  const [customerDatas, setCustomerDatas] = useState({
     firstName: "",
     lastName: "",
     enquiryType: "",
-    mobilePhone: "",
+    mobile: "",
     email: "",
     package: "",
     stage: "",
-    executive: "",
+    executiveName: "",
+    paid: "",
     startDate: "",
     endDate: "",
+    visa: "",
     passport: "",
-    adults: "",
-    children: "",
-    visaFile: "",
+    noOfAdults: "",
+    noOfChildren: "",
     billingAmount: "",
-    paid: "",
     balancePayment: "",
   });
-
   useEffect(() => {
-    const datepickerEl = document.getElementById("default-datepicker");
-    const datepickerE2 = document.getElementById("default-datepickertwo");
-
-    if (datepickerEl || datepickerE2) {
-      const options = {
-        autohide: false,
-        format: "dd/mm/yyyy",
-        maxDate: null,
-        minDate: null,
-        orientation: "bottom",
-        buttons: false,
-        autoSelectToday: false,
-        title: null,
-        rangePicker: false,
-        onShow: () => {},
-        onHide: () => {},
-      };
-
-      datepickerRef.current = new Datepicker(datepickerEl, options);
-      datepickerRef2.current = new Datepicker(datepickerE2, options);
-
-      return () => {
-        if (datepickerRef.current) {
-          datepickerRef.current.destroy();
-        }
-        if (datepickerRef2.current) {
-          datepickerRef2.current.destroy();
-        }
-      };
-    } else {
-      console.error(
-        "Element with ID 'default-datepicker' or 'default-datepickertwo' not found."
+    if (mode === "edit") {
+      const userId = `#${params.id}`;
+      const leadToEdit = CustomerInformation.find(
+        (data) => data.userId == userId
       );
+      const data = {
+        ...leadToEdit,
+        startDate: leadToEdit.startDate.split("T")[0],
+        endDate: leadToEdit.endDate.split("T")[0],
+      };
+
+      setCustomerDatas(data);
     }
-  }, []);
+  }, [CustomerInformation]);
 
   const handleChange = (e) => {
-    const { name, value, files } = e.target;
-    setAddCustomer((prev) => ({
-      ...prev,
-      if(files) {
-        return { [name]: files[0] };
-      },
-      [name]: value,
-    }));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const followup1 = datepickerRef.current?.getDate();
-    const followup2 = datepickerRef2.current?.getDate();
-    if (followup1 && followup2) {
-      const dateObj1 = new Date(followup1);
-      const dateObj2 = new Date(followup2);
-
-      const startDate = dateObj1.toLocaleDateString("en-GB");
-      const endDate = dateObj2.toLocaleDateString("en-GB");
+    const { name, value, type, files } = e.target;
+    if (type == "file") {
+      setCustomerDatas((prev) => ({
+        ...prev,
+        [name]: files[0],
+      }));
     } else {
-      console.error("Datepicker instance is not initialized.");
+      setCustomerDatas((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
+    setErrors((prev) => ({ ...prev, [name]: "" }));
+  };
+  console.log(customerDatas);
+
+  function validate() {
+    let valid = true;
+    const errors = {};
+    if (
+      customerDatas.firstName.length < 3 ||
+      customerDatas.firstName.length == 0
+    ) {
+      errors.firstName = "FirstName must be 3 characters above";
+      valid = false;
+    }
+    if (
+      customerDatas.lastName.length > 10 ||
+      customerDatas.lastName.length == 0
+    ) {
+      errors.lastName = "LastName must be 10 characters below";
+
+      valid = false;
+    }
+    if (customerDatas.enquiryType.length == "") {
+      errors.enquiryType = "EnquirtType is required";
+      valid = false;
+    }
+
+    if (String(customerDatas.mobile).length != 10) {
+      errors.mobile = "mobile Number must be 10 numbers";
+      valid = false;
+    }
+    if (
+      !customerDatas.email.includes("@gmail.com") ||
+      customerDatas.email.length === 0
+    ) {
+      errors.email = "Email should be valid";
+
+      valid = false;
+    }
+    if (customerDatas.package.length === 0) {
+      errors.package = "Package is required";
+
+      valid = false;
+    }
+    if (customerDatas.stage.length == "") {
+      errors.stage = "Stage is required";
+      valid = false;
+    }
+    if (
+      customerDatas.executiveName.length < 3 ||
+      customerDatas.executiveName.length === 0
+    ) {
+      errors.executiveName = "name must be 3 characters above";
+
+      valid = false;
+    }
+    if (customerDatas.startDate == "") {
+      errors.startDate = "startDate is required";
+
+      valid = false;
+    }
+    if (customerDatas.endDate == "") {
+      errors.endDate = "endDate is required";
+      valid = false;
+    }
+
+    if (customerDatas.billingAmount == "") {
+      errors.billingAmount = "billingAmount is required";
+
+      valid = false;
+    }
+    if (customerDatas.paid == "") {
+      errors.paid = "paid is required";
+
+      valid = false;
+    }
+    if (customerDatas.balancePayment == "") {
+      errors.balancePayment = "balancePayment is required";
+
+      valid = false;
+    }
+
+    setErrors(errors);
+    return valid;
+  }
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const formData = new FormData();
+    const datas = Object.entries(customerDatas);
+    datas.forEach(([key, value]) => {
+      formData.append(key, value);
+    });
+    if (!validate()) return console.log("invalid inputs");
+    if (mode === "add") {
+      console.log("add", datas);
+      try {
+        console.log(mode);
+        const response = await axios.post(
+          "http://localhost:4000/customer/addCustomer",
+          formData,
+          { headers: { "Content-Type": "multipart/form-data" } }
+        );
+        if (response.status === 200) {
+          navigate("/customer");
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    } else {
+      console.log(mode);
+      console.log("edit", datas);
+
+      try {
+        const encodedUserId = encodeURIComponent(`#${params.id}`);
+        const response = await axios.put(
+          `http://localhost:4000/customer/editCustomer/${encodedUserId}`,
+          formData,
+          { headers: { "Content-Type": "multipart/form-data" } }
+        );
+        if (response.status === 200) {
+          navigate("/customer");
+        }
+      } catch (err) {
+        console.log(err);
+      }
     }
   };
 
@@ -97,7 +194,9 @@ const AddCustomer = () => {
         onSubmit={handleSubmit}
         className="md:w-[93%] px-1 font-medium lg:w-[80%] my-6 items-end"
       >
-        <h1 className="poppins-semibold  text-lg">Add New Customer</h1>
+        <h1 className="poppins-semibold  text-lg">
+          {mode === "add" ? "Add New Customer" : "Edit Customer"}
+        </h1>
         <section className="my-1">
           <h1 className="bg-[#003E78] py-2 px-6 text-white  text-lg rounded-t-lg">
             Primary Information
@@ -105,27 +204,46 @@ const AddCustomer = () => {
 
           <div className="w-full bg-[#FFFFFF] roboto-semibold font-medium text-black flex flex-col  flex-wrap gap-y-3  p-5  items-start">
             <div className="w-full flex">
-              <InputBox
-                label={"First Name"}
-                inputWidth={"w-1/4"}
-                type={"text"}
-                value={addCustomer.firstName}
-                placeholder={"John"}
-                name={"firstName"}
-                className={
-                  "px-3 py-3 border-none ring-1 ring-gray-300 w-11/12 text-xs rounded-sm focus:ring-2 focus:ring-blue-500 outline-none"
-                }
-              />
-              <InputBox
-                label={"Last Name"}
-                type={"text"}
-                placeholder={"Doe"}
-                inputWidth={"w-1/4"}
-                name={"lastName"}
-                className={
-                  "px-3 py-3 border-none ring-1 ring-gray-300 w-11/12 text-xs rounded-sm focus:ring-2 focus:ring-blue-500 outline-none"
-                }
-              />
+              <div className={` w-1/4 flex flex-col`}>
+                <label className=" roboto-semibold  text-sm mb-2">
+                  First Name
+                </label>
+
+                <input
+                  type="text"
+                  name="firstName"
+                  value={customerDatas.firstName}
+                  placeholder="John"
+                  className={
+                    "px-3 py-3 border-none ring-1 ring-gray-300 w-11/12 text-xs rounded-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                  }
+                />
+                {errors && errors.firstName ? (
+                  <p className="text-xs text-red-600">{errors.firstName}</p>
+                ) : (
+                  <p className="h-4"></p>
+                )}
+              </div>
+              <div className={` w-1/4 flex flex-col`}>
+                <label className=" roboto-semibold  text-sm mb-2">
+                  Last Name
+                </label>
+
+                <input
+                  type="text"
+                  name="lastName"
+                  value={customerDatas.lastName}
+                  placeholder="Doe"
+                  className={
+                    "px-3 py-3 border-none ring-1 ring-gray-300 w-11/12 text-xs rounded-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                  }
+                />
+                {errors && errors.lastName ? (
+                  <p className="text-xs text-red-600">{errors.lastName}</p>
+                ) : (
+                  <p className="h-4"></p>
+                )}
+              </div>
               <div className="flex flex-col flex-wrap w-[30%]">
                 <label
                   htmlFor="countries"
@@ -136,43 +254,67 @@ const AddCustomer = () => {
                 <select
                   id="countries"
                   name="enquiryType"
+                  value={customerDatas.enquiryType}
                   className="bg-gray-50 w-4/5 border-gray-300 text-gray-400 text-[14px]  rounded-[0.3rem] focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 >
-                  <option hidden disabled selected>
+                  <option hidden selected>
                     Enquiry Type
                   </option>
-                  <option value="Flight Booking">Flight</option>
-                  <option value="Canceled">Canceled</option>
-                  <option value="Proposal Sent">Proposal Sent</option>
-                  <option value="Meeting Fixed">Meeting Fixed</option>
-                  <option value="Yes To Confirm">Yes to Confirm </option>
+                  <option value="Flight Booking">Flight Booking</option>
+                  <option value="Hotel Booking">Hotel Booking</option>
+                  <option value="Sight Seeing">Sight Seeing</option>
+                  <option value="Transport">Transport</option>
+                  <option value="Others">Others</option>
                 </select>
+                {errors && errors.enquiryType ? (
+                  <p className="text-xs text-red-600">{errors.enquiryType}</p>
+                ) : (
+                  <p className="h-4"></p>
+                )}
               </div>
             </div>
 
             <h3 className="">Contact Detail</h3>
             <div className="w-full flex">
-              <InputBox
-                label={"Mobile Phone"}
-                type={"text"}
-                name={"mobilePhone"}
-                inputWidth={"w-1/4"}
-                placeholder={"Enter Your Phone Number"}
-                className={
-                  "px-3 py-3 border-none ring-1 ring-gray-300 w-full text-xs rounded-sm focus:ring-2 focus:ring-blue-500 outline-none"
-                }
-              />
-              <InputBox
-                label={"Email"}
-                type={"email"}
-                inputWidth={"w-1/4"}
-                name={"email"}
-                placeholder={"example@email.com"}
-                labelClassName={"mx-5"}
-                className={
-                  "px-3 py-3 border-none ring-1 ring-gray-300 w-11/12 mx-5 text-xs rounded-sm focus:ring-2 focus:ring-blue-500 outline-none"
-                }
-              />
+              <div className={` w-1/4 flex flex-col`}>
+                <label className=" roboto-semibold  text-sm mb-2">
+                  Mobile Phone
+                </label>
+
+                <input
+                  type="number"
+                  name="mobile"
+                  value={customerDatas.mobile}
+                  placeholder="Enter Your Phone Number"
+                  className={
+                    "px-3 py-3 border-none ring-1 ring-gray-300 w-11/12 text-xs rounded-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                  }
+                />
+                {errors && errors.mobile ? (
+                  <p className="text-xs text-red-600">{errors.mobile}</p>
+                ) : (
+                  <p className="h-4"></p>
+                )}
+              </div>
+              <div className={` w-1/4 flex flex-col relative left-2`}>
+                <label className=" roboto-semibold  text-sm mb-2">Email</label>
+
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="example@email.com"
+                  value={customerDatas.email}
+                  className={
+                    "px-3 py-3 border-none ring-1 ring-gray-300 w-11/12 text-xs rounded-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                  }
+                />
+
+                {errors && errors.email ? (
+                  <p className="text-xs text-red-600">{errors.email}</p>
+                ) : (
+                  <p className="h-4"></p>
+                )}
+              </div>
               <div className="flex flex-col flex-wrap mx-7 w-[30%]">
                 <label
                   htmlFor="countries"
@@ -181,16 +323,21 @@ const AddCustomer = () => {
                   Package
                 </label>
                 <select
-                  id="countries"
                   name="package"
+                  value={customerDatas.package}
                   className="bg-gray-50 w-4/5 border-gray-300 text-gray-400 text-[14px] rounded-[0.3rem] focus:ring-blue-500 focus:border-blue-500 block  p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 >
-                  <option hidden disabled selected>
+                  <option hidden selected>
                     Package
                   </option>
-                  <option value="domestic">Domestic</option>
-                  <option value="international">International</option>
+                  <option value="Domestic">Domestic</option>
+                  <option value="International">International</option>
                 </select>
+                {errors && errors.package ? (
+                  <p className="text-xs text-red-600">{errors.package}</p>
+                ) : (
+                  <p className="h-4"></p>
+                )}
               </div>
             </div>
           </div>
@@ -209,79 +356,78 @@ const AddCustomer = () => {
               </label>
               <select
                 id="countries"
+                value={customerDatas.stage}
                 name="stage"
                 className="bg-gray-50 w-full border-gray-300 text-[14px] rounded-[0.3rem] focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               >
-                <option style={{ opacity: 0.3 }} hidden disabled selected>
+                <option style={{ opacity: 0.3 }} hidden selected>
                   Stage
                 </option>
-                <option value="confirmed">Confirmed</option>
-                <option value="canceled">Canceled</option>
-                <option value="pending">Pending</option>
-                <option value="waiting">Waiting</option>
-                <option value="ontrip">On Trip</option>
+                <option value="Confirmed">Confirmed</option>
+                <option value="Canceled">Canceled</option>
+                <option value="Pending">Pending</option>
+                <option value="Waiting">Waiting</option>
+                <option value="OnTrip">On Trip</option>
               </select>
+              {errors && errors.stage ? (
+                <p className="text-xs text-red-600">{errors.stage}</p>
+              ) : (
+                <p className="h-4"></p>
+              )}
             </div>
-            <InputBox
-              label={"Executive"}
-              type={"text"}
-              name={"executive"}
-              placeholder={"Executive "}
-              inputWidth={"w-1/5"}
-              className={
-                "px-3 py-3 border-none ring-1  ring-gray-300 w-full text-sm rounded-sm focus:ring-2 focus:ring-blue-500 outline-none"
-              }
-            />
+            <div className={` w-1/5 flex flex-col relative `}>
+              <label className=" roboto-semibold  text-sm mb-2">
+                Executive
+              </label>
+
+              <input
+                type="text"
+                name="executiveName"
+                value={customerDatas.executiveName}
+                placeholder="Executive Name"
+                className={
+                  "px-3 py-3 border-none ring-1  ring-gray-300 w-full text-sm rounded-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                }
+              />
+
+              {errors && errors.executiveName ? (
+                <p className="text-xs text-red-600">{errors.executiveName}</p>
+              ) : (
+                <p className="h-4"></p>
+              )}
+            </div>
             <div className="flex flex-col w-1/5">
               <label className={` text-sm mb-2`}>Start date</label>
               <div className="relative max-w-sm">
                 <input
-                  data-datepicker
-                  id="default-datepicker"
-                  type="text"
+                  type="date"
+                  value={customerDatas.startDate}
+                  name="startDate"
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-sm focus:ring-blue-500 focus:border-blue-500 block w-full  p-3 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   placeholder="Select date"
-                />
-                <div className="absolute inset-y-0 right-2 flex items-center ps-3.5 pointer-events-none">
-                  <svg
-                    width="25"
-                    height="25"
-                    viewBox="0 0 25 25"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M7.5498 3.5V4.25H4.5498V20.75H21.0498V4.25H18.0498V3.5H16.5498V4.25H9.0498V3.5H7.5498ZM6.0498 5.75H7.5498V6.5H9.0498V5.75H16.5498V6.5H18.0498V5.75H19.5498V7.25H6.0498V5.75ZM6.0498 8.75H19.5498V19.25H6.0498V8.75ZM10.5498 10.25V11.75H12.0498V10.25H10.5498ZM13.5498 10.25V11.75H15.0498V10.25H13.5498ZM16.5498 10.25V11.75H18.0498V10.25H16.5498ZM12.7998 12.5V15.5H15.7998V12.5H12.7998ZM7.5498 13.25V14.75H9.0498V13.25H7.5498ZM10.5498 13.25V14.75H12.0498V13.25H10.5498ZM16.5498 13.25V14.75H18.0498V13.25H16.5498ZM7.5498 16.25V17.75H9.0498V16.25H7.5498ZM10.5498 16.25V17.75H12.0498V16.25H10.5498ZM13.5498 16.25V17.75H15.0498V16.25H13.5498Z"
-                      fill="#6E7491"
-                    />
-                  </svg>
-                </div>
+                />{" "}
+                {errors && errors.startDate ? (
+                  <p className="text-xs text-red-600">{errors.startDate}</p>
+                ) : (
+                  <p className="h-4"></p>
+                )}
               </div>
             </div>
             <div className="flex flex-col w-1/5">
               <label className={`  text-sm mb-2`}>End date</label>
               <div className="relative max-w-sm">
                 <input
-                  data-datepicker
-                  id="default-datepickertwo"
-                  type="text"
+                  type="date"
+                  value={customerDatas.endDate}
+                  name="endDate"
                   className="bg-gray-50 border  border-gray-300 text-gray-900 text-sm rounded-sm focus:ring-blue-500 focus:border-blue-500 block w-full  p-3 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   placeholder="Select date"
-                />
-                <div className="absolute inset-y-0 right-2 flex items-center ps-3.5 pointer-events-none">
-                  <svg
-                    width="25"
-                    height="25"
-                    viewBox="0 0 25 25"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M7.5498 3.5V4.25H4.5498V20.75H21.0498V4.25H18.0498V3.5H16.5498V4.25H9.0498V3.5H7.5498ZM6.0498 5.75H7.5498V6.5H9.0498V5.75H16.5498V6.5H18.0498V5.75H19.5498V7.25H6.0498V5.75ZM6.0498 8.75H19.5498V19.25H6.0498V8.75ZM10.5498 10.25V11.75H12.0498V10.25H10.5498ZM13.5498 10.25V11.75H15.0498V10.25H13.5498ZM16.5498 10.25V11.75H18.0498V10.25H16.5498ZM12.7998 12.5V15.5H15.7998V12.5H12.7998ZM7.5498 13.25V14.75H9.0498V13.25H7.5498ZM10.5498 13.25V14.75H12.0498V13.25H10.5498ZM16.5498 13.25V14.75H18.0498V13.25H16.5498ZM7.5498 16.25V17.75H9.0498V16.25H7.5498ZM10.5498 16.25V17.75H12.0498V16.25H10.5498ZM13.5498 16.25V17.75H15.0498V16.25H13.5498Z"
-                      fill="#6E7491"
-                    />
-                  </svg>
-                </div>
+                />{" "}
+                {errors && errors.endDate ? (
+                  <p className="text-xs text-red-600">{errors.endDate}</p>
+                ) : (
+                  <p className="h-4"></p>
+                )}
               </div>
             </div>
             <div className="w-[18%] mr-2 ">
@@ -293,8 +439,8 @@ const AddCustomer = () => {
                 >
                   <input
                     type="file"
+                    name="visa"
                     className="hidden"
-                    name="visaFile"
                     id="fileUpload"
                   />
                   Choose File
@@ -317,60 +463,108 @@ const AddCustomer = () => {
                 </span>
               </div>
             </div>
-            <InputBox
-              label={"Passport"}
-              type={"text"}
-              name={"passport"}
-              inputWidth={"w-[20%]"}
-              className={
-                "px-3 py-3 border-none ring-1  ring-gray-300 w-full text-sm rounded-sm focus:ring-2 focus:ring-blue-500 outline-none"
-              }
-            />
-            <InputBox
-              label={"No of Adults"}
-              type={"text"}
-              name={"adults"}
-              inputWidth={"w-[20%]"}
-              className={
-                "px-3 py-3 border-none ring-1  ring-gray-300 w-full text-sm rounded-sm focus:ring-2 focus:ring-blue-500 outline-none"
-              }
-            />
-            <InputBox
-              label={"No of Children"}
-              type={"text"}
-              name={"children"}
-              inputWidth={"w-[20%]"}
-              className={
-                "px-3 py-3 border-none ring-1  ring-gray-300 w-full text-sm rounded-sm focus:ring-2 focus:ring-blue-500 outline-none"
-              }
-            />{" "}
-            <InputBox
-              label={"Billing amount"}
-              type={"text"}
-              name={"billingAmount"}
-              inputWidth={"w-[20%]"}
-              className={
-                "px-3 py-3 border-none ring-1  ring-gray-300 w-full text-sm rounded-sm focus:ring-2 focus:ring-blue-500 outline-none"
-              }
-            />{" "}
-            <InputBox
-              label={"Paid"}
-              type={"text"}
-              name={"paid"}
-              inputWidth={"w-[20%]"}
-              className={
-                "px-3 py-3 border-none ring-1  ring-gray-300 w-full text-sm rounded-sm focus:ring-2 focus:ring-blue-500 outline-none"
-              }
-            />{" "}
-            <InputBox
-              label={"Balance Payment"}
-              type={"text"}
-              name={"balancePayment"}
-              inputWidth={"w-[20%]"}
-              className={
-                "px-3 py-3 border-none ring-1  ring-gray-300 w-full text-sm rounded-sm focus:ring-2 focus:ring-blue-500 outline-none"
-              }
-            />
+            <div className={` w-1/5 flex flex-col relative `}>
+              <label className=" roboto-semibold  text-sm mb-2">Passport</label>
+
+              <input
+                type="text"
+                name="passport"
+                value={customerDatas.passport}
+                placeholder=""
+                className={
+                  "px-3 py-3 border-none ring-1  ring-gray-300 w-full text-sm rounded-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                }
+              />
+            </div>
+            <div className={` w-1/5 flex flex-col relative `}>
+              <label className=" roboto-semibold  text-sm mb-2">
+                No of Adults
+              </label>
+
+              <input
+                type="number"
+                name="noOfAdults"
+                value={customerDatas.noOfAdults}
+                placeholder=""
+                className={
+                  "px-3 py-3 border-none ring-1  ring-gray-300 w-full text-sm rounded-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                }
+              />
+            </div>
+            <div className={` w-1/5 flex flex-col relative `}>
+              <label className=" roboto-semibold  text-sm mb-2">
+                No of Children
+              </label>
+
+              <input
+                type="number"
+                name="noOfChildren"
+                value={customerDatas.noOfChildren}
+                className={
+                  "px-3 py-3 border-none ring-1  ring-gray-300 w-full text-sm rounded-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                }
+              />
+            </div>
+            <div className={` w-1/5 flex flex-col relative `}>
+              <label className=" roboto-semibold  text-sm mb-2">
+                Billing amount
+              </label>
+              <input
+                type="number"
+                value={customerDatas.billingAmount}
+                name="billingAmount"
+                className={
+                  "px-3 py-3 border-none ring-1  ring-gray-300 w-full text-sm rounded-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                }
+              />
+              {errors && errors.billingAmount ? (
+                <p className="text-xs text-red-600">{errors.billingAmount}</p>
+              ) : (
+                <p className="h-4"></p>
+              )}
+            </div>
+            <div className={` w-1/5 flex flex-col relative `}>
+              <label className=" roboto-semibold  text-sm mb-2">Paid</label>
+              <input
+                type="number"
+                name="paid"
+                value={customerDatas.paid}
+                className={
+                  "px-3 py-3 border-none ring-1  ring-gray-300 w-full text-sm rounded-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                }
+              />{" "}
+              {errors && errors.paid ? (
+                <p className="text-xs text-red-600">{errors.paid}</p>
+              ) : (
+                <p className="h-4"></p>
+              )}
+            </div>
+
+            <div className={` w-1/5 flex flex-col relative `}>
+              <label className=" roboto-semibold  text-sm mb-2">
+                Balance Payment
+              </label>
+
+              <input
+                value={customerDatas.balancePayment}
+                type="number"
+                name="balancePayment"
+                className={
+                  "px-3 py-3 border-none ring-1  ring-gray-300 w-full text-sm rounded-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                }
+              />
+              {errors && errors.balancePayment ? (
+                <p className="text-xs text-red-600">{errors.balancePayment}</p>
+              ) : (
+                <p className="h-4"></p>
+              )}
+            </div>
+            <Link
+              to="/customer"
+              className="bg-[#0E2238] px-6 py-3 text-white text-sm mt-6 poppins-medium  rounded-md"
+            >
+              Cancel
+            </Link>
             <button className="bg-[#0E2238] px-6 py-3 text-white text-sm mt-6 poppins-medium  rounded-md">
               Submit
             </button>

@@ -509,11 +509,12 @@ const Finance = () => {
         <section className="flex justify-between my-8 items-center">
           <div className="flex items-center justify-between px-5 rounded-xl bg-white w-[30%] py-1.5 ">
             <Input
-              divElement={"w-full"}
-              className={"text-sm border-none outline-none"}
+              divElement={"w-full "}
+              className={"text-sm w-11/12 border-none outline-none"}
               id={"financeSearch"}
               placeholder={"Search here..."}
             />
+
             <svg
               width="32"
               height="32"

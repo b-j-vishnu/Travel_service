@@ -5,8 +5,8 @@ import {
   Routes,
   Route,
   useLocation,
-  useNavigate,
   Navigate,
+  useNavigate,
 } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -28,27 +28,31 @@ import AddAdditionalPayement from "./pages/InvoiceORbill/AddAdditionalPayement";
 import axios from "axios";
 import { useState, useEffect } from "react";
 const App = () => {
-  const [access, setAccess] = useState(false);
+  const [access, setAccess] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-
-  const location = useLocation();
   const navigate = useNavigate();
-
+  const location = useLocation();
   useEffect(() => {
-    axios
-      .get("http://localhost:4000/getDashboard", { withCredentials: true })
-      .then((response) => {
-        console.log(response);
-        setAccess(true);
-      })
-      .catch((error) => {
-        console.error("Error fetching access:", error);
+    const fetchAccess = async () => {
+      try {
+        const response = await axios.get("http://localhost:4000/getDashboard", {
+          withCredentials: true,
+        });
+        if (response.status === 200) {
+          setAccess(true);
+        }
+      } catch (error) {
+        console.log("Error fetching access:", error);
         setAccess(false);
-      })
-      .finally(() => {
+        navigate("/");
+      } finally {
         setIsLoading(false);
-      });
-  }, []);
+      }
+    };
+
+    fetchAccess();
+  }, [location.pathname]);
+
   const isSignupPage = location.pathname === "/";
 
   if (isLoading) {
@@ -58,7 +62,7 @@ const App = () => {
       </div>
     );
   }
-
+  console.log(access);
   return (
     <div className="w-full">
       {!isSignupPage && <Sidbar />}
@@ -72,17 +76,41 @@ const App = () => {
         <Route path="/calander" element={<MyCalander />} />
         <Route path="/leads">
           <Route index element={<Leads />}></Route>
-          <Route path="addLeads" element={<AddLeads />}></Route>
+          <Route path="addLeads" element={<AddLeads mode="add" />}></Route>
+          <Route path="edit/:id" element={<AddLeads mode="edit" />}></Route>
         </Route>
         <Route path="/itinerary">
           <Route index element={<Itinerary />}></Route>
-          <Route path="addItinerary" element={<AddItinerary />}></Route>
+          <Route
+            path="addItinerary"
+            element={<AddItinerary mode="add" />}
+          ></Route>
+          <Route
+            path="editItinerary/:id"
+            element={<AddItinerary mode="edit" />}
+          ></Route>
           <Route path="viewItinerary/:id" element={<ViewItinerary />}></Route>
+        </Route>
+
+        <Route path="/customer">
+          <Route index element={<Customer />}></Route>
+          <Route
+            path="addCustomer"
+            element={<AddCustomer mode="add" />}
+          ></Route>
+          <Route
+            path="editCustomer/:id"
+            element={<AddCustomer mode="edit" />}
+          ></Route>
         </Route>
 
         <Route path="/invoice">
           <Route index element={<InvoiceORbill />}></Route>
-          <Route path="addInvoice" element={<AddInvoice />}></Route>
+          <Route path="addInvoice" element={<AddInvoice mode="add" />}></Route>
+          <Route
+            path="/invoice/editInvoice/:id"
+            element={<AddInvoice mode="edit" />}
+          ></Route>
           <Route
             path="additionalPayment"
             element={<AddAdditionalPayement />}
@@ -91,11 +119,6 @@ const App = () => {
             path="/invoice/viewInvoice/:id"
             element={<ViewInvoice />}
           ></Route>
-        </Route>
-
-        <Route path="/customer">
-          <Route index element={<Customer />}></Route>
-          <Route path="addCustomer" element={<AddCustomer />}></Route>
         </Route>
 
         <Route path="/finance">

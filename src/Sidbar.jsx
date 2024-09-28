@@ -127,7 +127,9 @@ const Sidbar = () => {
           <Link
             to="/leads"
             className={
-              path === "/leads" || path === "/leads/addLeads"
+              path === "/leads" ||
+              path === "/leads/addLeads" ||
+              path.includes("/leads/edit")
                 ? " lg:flex  bg-white  w-full roboto-medium text-[0.8rem]  md:px-[0.1rem] md:py-1 lg:py-[0.5rem] lg:justify-normal lg:px-4 lg:items-center  lg:gap-x-1 rounded-md"
                 : `lg:flex w-full roboto-medium text-[0.8rem]  md:px-[0.1rem] md:py-1 lg:py-[0.5rem] lg:justify-normal lg:px-4 lg:items-center  lg:gap-x-1 rounded-md`
             }
@@ -157,7 +159,8 @@ const Sidbar = () => {
             className={
               path === "/itinerary" ||
               path === "/itinerary/addItinerary" ||
-              path.includes("viewItinerary")
+              path.includes("viewItinerary") ||
+              path.includes("/itinerary/edit")
                 ? " lg:flex  bg-white text-black  w-full roboto-medium text-[0.8rem]  md:px-[0.1rem] md:py-1 lg:py-[0.5rem] lg:justify-normal lg:px-4 lg:items-center  lg:gap-x-1 rounded-md"
                 : `lg:flex  text-black  w-full roboto-medium text-[0.8rem]  md:px-[0.1rem] md:py-1 lg:py-[0.5rem]  lg:justify-normal lg:px-4 lg:items-center  lg:gap-x-1 rounded-md`
             }
@@ -182,7 +185,9 @@ const Sidbar = () => {
           <Link
             to="/customer"
             className={
-              path === "/customer" || path === "/customer/addCustomer"
+              path === "/customer" ||
+              path === "/customer/addCustomer" ||
+              path.includes("/customer/edit")
                 ? " lg:flex  bg-white  w-full roboto-medium text-[0.8rem] md:px-[0.1rem] md:py-1 lg:py-[0.5rem]  lg:justify-normal lg:px-4 lg:items-center  lg:gap-x-1 rounded-md"
                 : `lg:flex w-full roboto-medium text-[0.8rem] md:px-[0.1rem] md:py-1 lg:py-[0.5rem] lg:justify-normal lg:px-4 lg:items-center  lg:gap-x-1 rounded-md`
             }
@@ -223,7 +228,8 @@ const Sidbar = () => {
             className={
               path === "/invoice" ||
               path === "/invoice/addInvoice" ||
-              path.includes("viewInvoice")
+              path.includes("viewInvoice") ||
+              path.includes("/invoice/edit")
                 ? " lg:flex  bg-white  w-full roboto-medium text-[0.8rem]  md:px-[0.1rem] md:py-1 lg:py-[0.5rem] lg:justify-normal lg:px-4 lg:items-center  lg:gap-x-1 rounded-md"
                 : `lg:flex w-full roboto-medium text-[0.8rem] md:px-[0.1rem] md:py-1 lg:py-[0.5rem] lg:justify-normal lg:px-4 lg:items-center  lg:gap-x-1 rounded-md`
             }
@@ -247,12 +253,12 @@ const Sidbar = () => {
               Invoice / Bill
             </p>
           </Link>
-          <Link
+          {/*<Link
             to="/finance"
             className={
               path === "/finance"
-                ? " lg:flex  bg-white  w-full roboto-medium text-[0.8rem]  md:px-[0.1rem] md:py-1 lg:py-[0.5rem]  lg:justify-normal lg:px-4 lg:items-center  lg:gap-x-1 rounded-md"
-                : `lg:flex w-full roboto-medium text-[0.8rem]  md:px-[0.1rem] md:py-1 lg:py-[0.5rem]  lg:justify-normal lg:px-4 lg:items-center  lg:gap-x-1 rounded-md`
+                ? " lg:flex bg-white  w-full roboto-medium text-[0.8rem]  md:px-[0.1rem] md:py-1 lg:py-[0.5rem]  lg:justify-normal lg:px-4 lg:items-center  lg:gap-x-1 rounded-md"
+                : `lg:flex w-full  roboto-medium text-[0.8rem]  md:px-[0.1rem] md:py-1 lg:py-[0.5rem]  lg:justify-normal lg:px-4 lg:items-center  lg:gap-x-1 rounded-md`
             }
           >
             <div className=" flex justify-center lg:w-6 lg:h-6 md:w-full ">
@@ -278,7 +284,7 @@ const Sidbar = () => {
               </svg>
             </div>
             <p className="mx-3 md:hidden lg:block whitespace-nowrap">Finance</p>
-          </Link>
+          </Link>*/}
         </div>
         <div className=" lg:w-[80%]   md:hidden lg:block  md:mt-6 lg:mt-32 flex flex-col  items-center ">
           <p className="text-center lg:text-xs  poppins-regular whitespace-nowrap">
