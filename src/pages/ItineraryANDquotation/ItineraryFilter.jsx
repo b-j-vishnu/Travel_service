@@ -1,7 +1,6 @@
 /* eslint-disable no-unused-vars */
 import axios from "axios";
-import { Datepicker } from "flowbite";
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { getItinerary } from "../../Actions/ItineraryActions";
@@ -57,7 +56,7 @@ const ItineraryFilter = () => {
           id="stage"
           name="stage"
           value={filterOptions.stage}
-          className="bg-gray-50 borde border-gray-300 text-gray-900 text-[14px] roboto-medium rounded-[0.3rem] focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+          className="bg-gray-50 w-full border-none ring-1 focus:ring-2 ring-gray-300  text-sm  outline-none  roboto-medium rounded-[0.3rem] focus:ring-blue-500  block  px-2 py-3"
         >
           <option hidden selected>
             Select
@@ -68,16 +67,14 @@ const ItineraryFilter = () => {
         </select>
 
         <div className="flex flex-col w-full">
-          <label
-            className={` roboto-bold  text-blue-gray-100 text-sm mt-3 mb-1`}
-          >
+          <label className={` roboto-bold  text-white text-sm mt-3 mb-1`}>
             Valid Date
           </label>
           <div className="relative max-w-sm">
             <input
               type="date"
               name="validDate"
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full  py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              className="bg-gray-50 w-full border-none ring-1 focus:ring-2 ring-gray-300  text-sm  outline-none  roboto-medium rounded-[0.3rem] focus:ring-blue-500  block  px-2 py-3"
               placeholder="Select date"
             />
           </div>
@@ -93,7 +90,7 @@ const ItineraryFilter = () => {
           placeholder="Type"
           name="total"
           value={filterOptions.total}
-          className="rounded-[0.3rem] w-full text-[14px] roboto-medium  "
+          className="bg-gray-50 w-full border-none ring-1 focus:ring-2 ring-gray-300  text-sm  outline-none  roboto-medium rounded-[0.3rem] focus:ring-blue-500  block  px-2 py-3"
         ></input>
 
         <label className="block mt-5  roboto-bold text-xs mb-2  text-gray-100  font-medium dark:text-white">
@@ -104,7 +101,7 @@ const ItineraryFilter = () => {
           placeholder="Type"
           name="executiveName"
           value={filterOptions.executiveName}
-          className="rounded-[0.3rem] w-full text-[14px] roboto-medium  "
+          className="bg-gray-50 w-full border-none ring-1 focus:ring-2 ring-gray-300  text-sm  outline-none  roboto-medium rounded-[0.3rem] focus:ring-blue-500  block  px-2 py-3"
         ></input>
         <label className="block mt-5 roboto-bold text-xs mb-2  text-gray-100  font-medium dark:text-white">
           User ID
@@ -114,7 +111,7 @@ const ItineraryFilter = () => {
           placeholder="Type"
           name="id"
           value={filterOptions.id}
-          className="rounded-[0.3rem] w-full text-[14px] roboto-medium   "
+          className="bg-gray-50 w-full border-none ring-1 focus:ring-2 ring-gray-300  text-sm  outline-none  roboto-medium rounded-[0.3rem] focus:ring-blue-500  block  px-2 py-3"
         ></input>
         <div className="flex my-5  justify-between items-center">
           <button

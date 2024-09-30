@@ -14,14 +14,18 @@ const Leads = () => {
     (state) => state.leads.LeadsInformation
   );
   useEffect(() => {
-    axios
-      .get("http://localhost:4000/leads/getLeads")
-      .then((res) => {
-        dispatch(getLeads(res.data.allLeads));
-      })
-      .catch((err) => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:4000/leads/getLeads"
+        );
+        console.log("leads", response.data.allLeads);
+        dispatch(getLeads(response.data.allLeads));
+      } catch (err) {
         console.log(err);
-      });
+      }
+    };
+    fetchData();
   }, [dispatch, triggerRender]);
 
   const [showDropdown, setShowDropdown] = useState({});
@@ -99,7 +103,8 @@ const Leads = () => {
       );
       if (response.status === 200) {
         setTriggerRender(!triggerRender);
-        setCheckBox(!checkBox);
+        setCheckBox(false);
+        setChecked({});
         toast.success("successfull deleted");
       }
     } catch (err) {

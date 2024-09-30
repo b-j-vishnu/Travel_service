@@ -8,11 +8,11 @@ const AddItinerary = ({ mode }) => {
   const [errors, setErrors] = useState();
   const navigate = useNavigate();
   const params = useParams();
-
+  const [searchedData, setSearchedData] = useState();
   const dispatch = useDispatch();
-  const searchedData = useSelector(
-    (state) => state.searchResults.searchInformation
-  );
+  //  const searched = useSelector(
+  //    (state) => state.searchResults.searchInformation
+  //  );
   console.log(searchedData);
   const [itineraryData, setItinerarayData] = useState({
     proposalDate: "",
@@ -24,7 +24,7 @@ const AddItinerary = ({ mode }) => {
     itineraryFor: "",
     destinationTemplate: "",
     subject: "",
-    userId: "",
+    id: "",
     introMsg: "",
   });
   const ItineraryInformation = useSelector(
@@ -41,11 +41,11 @@ const AddItinerary = ({ mode }) => {
         proposalDate: itineraryToEdit.proposalDate.split("T")[0],
         validDate: itineraryToEdit.validDate.split("T")[0],
       };
-
-      setItinerarayData(data);
+      console.log("data", data);
+      setItinerarayData({ ...data, id: data.userId });
+      setSearchedData(data);
     }
   }, [ItineraryInformation]);
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setItinerarayData((prev) => ({
@@ -76,9 +76,9 @@ const AddItinerary = ({ mode }) => {
     ) {
       errors.executiveName = "Name must be less than 15 ";
       valid = false;
-    }
-    if (String(itineraryData.mobile).length != 10) {
-      errors.mobile = "Mobile Number must be 10 numbers";
+      if (String(itineraryData.mobile).length != 10) {
+        errors.mobile = "Mobile Number must be 10 numbers";
+      }
       valid = false;
     }
     if (
@@ -106,13 +106,22 @@ const AddItinerary = ({ mode }) => {
     }
     console.log(itineraryData);
 
-    const { userId, stage, firstName, lastName, billingAmount } = searchedData;
+    const {
+      userId,
+      stage,
+      firstName,
+      lastName,
+      plannedNoOfDays,
+      billingAmount,
+    } = searchedData;
     const dataToSend = {
       ...itineraryData,
       userId,
       stage,
+      plannedNoOfDays,
       billingAmount,
-      fullName: `${firstName} ${lastName}`,
+      firstName,
+      lastName,
     };
     if (mode === "add") {
       try {
@@ -145,23 +154,23 @@ const AddItinerary = ({ mode }) => {
   };
   useEffect(() => {
     const search = async () => {
-      const userIds = itineraryData.userId && itineraryData.userId.slice(1);
-      console.log(userIds);
+      const userIds = itineraryData.id && itineraryData.id.slice(1);
+      console.log("search", userIds);
       await axios
         .get(
           `http://localhost:4000/search/searchById?type=${itineraryData.itineraryFor}&userId=${userIds}`
         )
         .then((response) => {
           console.log(response);
-          dispatch(getSearchedResult(response.data.foundedPerson));
+          setSearchedData(response.data.foundedPerson);
         })
         .catch((err) => {
           console.log(err);
-          dispatch(getSearchedResult({}));
+          setSearchedData({});
         });
     };
     search();
-  }, [itineraryData.id, itineraryData.itineraryFor]);
+  }, [itineraryData.id, itineraryData.itineraryFor, dispatch]);
 
   return (
     <div className="w-full flex mt-16 justify-end bg-gray-100">
@@ -189,7 +198,7 @@ const AddItinerary = ({ mode }) => {
                     name="proposalDate"
                     type="date"
                     value={itineraryData.proposalDate}
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-sm focus:ring-blue-500 focus:border-blue-500 block w-full  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    className="bg-gray-50 w-full border-none ring-1 focus:ring-2 ring-gray-300  text-sm  outline-none   rounded-[0.3rem] focus:ring-blue-500  block  p-3 "
                     placeholder="Select date"
                   />
                 </div>
@@ -211,7 +220,7 @@ const AddItinerary = ({ mode }) => {
                     name="validDate"
                     type="date"
                     value={itineraryData.validDate}
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-sm focus:ring-blue-500 focus:border-blue-500 block w-full  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    className="bg-gray-50 w-full border-none ring-1 focus:ring-2 ring-gray-300  text-sm  outline-none   rounded-[0.3rem] focus:ring-blue-500  block  p-3 "
                     placeholder="Select date"
                   />
                   {errors && errors.validDate ? (
@@ -224,14 +233,14 @@ const AddItinerary = ({ mode }) => {
               <div className="flex flex-col flex-wrap w-[23%]">
                 <label
                   htmlFor="countries"
-                  className="  roboto-bold text-sm mb-2  text-black  font-medium dark:text-white"
+                  className="  roboto-bold text-sm mb-2  text-black  font-medium "
                 >
                   Accept Payment Via
                 </label>
                 <select
                   name="acceptPaymentVia"
                   value={itineraryData.acceptPaymentVia}
-                  className="bg-gray-50 w-full border-gray-300 text-gray-400 text-[14px] roboto-medium rounded-sm focus:ring-blue-500 focus:border-blue-500 block  p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  className="bg-gray-50 w-full border-none ring-1 focus:ring-2 ring-gray-300  text-sm  outline-none   rounded-[0.3rem] focus:ring-blue-500  block  p-3 "
                 >
                   <option hidden selected>
                     Select value
@@ -316,7 +325,7 @@ const AddItinerary = ({ mode }) => {
                   name="itineraryFor"
                   disabled={mode === "edit" ? true : false}
                   value={itineraryData.itineraryFor}
-                  className="bg-gray-50 w-full border-gray-300 text-gray-400 text-[14px] roboto-medium rounded-sm focus:ring-blue-500 focus:border-blue-500 block   dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  className="bg-gray-50 w-full border-none ring-1 focus:ring-2 ring-gray-300  text-sm  outline-none  roboto-medium rounded-[0.3rem] focus:ring-blue-500  block  p-3 "
                 >
                   <option hidden selected>
                     Select
@@ -340,7 +349,7 @@ const AddItinerary = ({ mode }) => {
                 <select
                   name="destinationTemplate"
                   value={itineraryData.destinationTemplate}
-                  className="bg-gray-50 w-11/12 border-gray-300 text-gray-400 text-[14px] roboto-medium rounded-smfocus:ring-blue-500 focus:border-blue-500 block   dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  className="bg-gray-50 w-11/12 border-none ring-1 focus:ring-2 ring-gray-300  text-sm  outline-none  roboto-medium rounded-[0.3rem] focus:ring-blue-500  block  p-3 "
                 >
                   <option hidden selected>
                     Select
@@ -365,7 +374,7 @@ const AddItinerary = ({ mode }) => {
                   placeholder="Reg: Honeymoon Holiday Package"
                   name="subject"
                   value={itineraryData.subject}
-                  className=" py-3  border-none mt-2 ring-1 ring-gray-300 w-[96%] text-sm rounded-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                  className=" py-3  px-2 border-none mt-2 ring-1 ring-gray-300 w-[96%] text-sm rounded-sm focus:ring-2 focus:ring-blue-500 outline-none"
                   type="text"
                 ></input>
               </div>
@@ -376,7 +385,7 @@ const AddItinerary = ({ mode }) => {
                   name="introMsg"
                   value={itineraryData.introMsg}
                   rows={7}
-                  className=" py-2 border-none mt-2 ring-1 ring-gray-300 w-[96%] text-sm rounded-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                  className=" py-2 px-2 border-none mt-2 ring-1 ring-gray-300 w-[96%] text-sm rounded-sm focus:ring-2 focus:ring-blue-500 outline-none"
                   type="text"
                 ></textarea>
               </div>
@@ -397,15 +406,19 @@ const AddItinerary = ({ mode }) => {
                   <input
                     type="text"
                     placeholder="Id"
-                    name="userId"
+                    name="id"
                     disabled={mode === "edit" ? true : false}
-                    value={itineraryData.userId}
-                    className="w-28 focus:ring-0  border-none"
+                    value={
+                      mode === "edit" ? searchedData?.userId : itineraryData.id
+                    }
+                    className="w-28 focus:ring-0 px-2 h-10 outline-none border-none"
                   ></input>
                 </td>
                 <td className="px-4 py-1 w-[15%]  border-r-2 border-b-2">
                   <p className="w-28 focus:ring-0  border-none">
-                    {searchedData && searchedData.firstName}
+                    {searchedData &&
+                      searchedData?.firstName &&
+                      `${searchedData?.firstName} ${searchedData?.lastName}`}
                   </p>
                 </td>
                 <td className="px-4 py-1 w-[15%] border-r-2 border-b-2 ">

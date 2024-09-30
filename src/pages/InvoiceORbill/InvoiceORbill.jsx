@@ -596,7 +596,7 @@ const InvoiceORbill = () => {
                         </td>
                         <td className="flex items-center relative pt-5  text-sm">
                           <p className=" poppins-bold px-1">
-                            {person.fullName}
+                            {`${person.firstName} ${person.lastName}`}
                           </p>
                           <svg
                             onClick={() => handleShowDrapdown(index)}

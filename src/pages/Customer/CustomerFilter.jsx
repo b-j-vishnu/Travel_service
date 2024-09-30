@@ -49,7 +49,7 @@ const CustomerFilter = ({ handleHideFilter }) => {
           id="stage"
           name="stage"
           value={filterOptions.stage}
-          className="bg-gray-50 borde border-gray-300 text-gray-900 text-[14px] roboto-medium rounded-[0.3rem] focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+          className="bg-gray-50 w-full border-none ring-1 focus:ring-2 ring-gray-300  text-sm  outline-none  roboto-medium rounded-[0.3rem] focus:ring-blue-500  block  px-2 py-3"
         >
           <option hidden selected>
             Select
@@ -71,7 +71,7 @@ const CustomerFilter = ({ handleHideFilter }) => {
           id="countries"
           value={filterOptions.enquiryType}
           name="enquiryType"
-          className="bg-gray-50 border text-[14px] roboto-medium  border-gray-300 text-gray-900  rounded-[0.3rem] focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+          className="bg-gray-50 w-full border-none ring-1 focus:ring-2 ring-gray-300  text-sm  outline-none  roboto-medium rounded-[0.3rem] focus:ring-blue-500  block  px-2 py-3"
         >
           <option hidden selected>
             Select
@@ -92,7 +92,7 @@ const CustomerFilter = ({ handleHideFilter }) => {
           value={filterOptions.package}
           id="countries"
           name="package"
-          className="bg-gray-50 border text-[14px] roboto-medium  border-gray-300 text-gray-900  rounded-[0.3rem] focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+          className="bg-gray-50 w-full border-none ring-1 focus:ring-2 ring-gray-300  text-sm  outline-none  roboto-medium rounded-[0.3rem] focus:ring-blue-500  block  px-2 py-3"
         >
           <option hidden selected>
             Select
@@ -108,7 +108,7 @@ const CustomerFilter = ({ handleHideFilter }) => {
         <input
           type="date"
           name="startDate"
-          className="rounded-[0.3rem] w-full text-[14px] roboto-medium  "
+          className="bg-gray-50 w-full border-none ring-1 focus:ring-2 ring-gray-300  text-sm  outline-none  roboto-medium rounded-[0.3rem] focus:ring-blue-500  block  px-2 py-3"
         ></input>
         <label className="block mt-5 roboto-bold text-xs mb-2  text-gray-100  font-medium dark:text-white">
           End Date
@@ -116,7 +116,7 @@ const CustomerFilter = ({ handleHideFilter }) => {
         <input
           type="date"
           name="endDate"
-          className="rounded-[0.3rem] w-full text-[14px] roboto-medium  "
+          className="bg-gray-50 w-full border-none ring-1 focus:ring-2 ring-gray-300  text-sm  outline-none  roboto-medium rounded-[0.3rem] focus:ring-blue-500  block  px-2 py-3"
         ></input>
         <div className="flex my-5  justify-between items-center">
           <button className="px-9 roboto-bold rounded-xl py-1 bg-white text-black">

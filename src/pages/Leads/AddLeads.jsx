@@ -225,7 +225,7 @@ const AddLeads = ({ mode }) => {
             <div className="flex flex-col flex-wrap w-[30%]">
               <label
                 htmlFor="countries"
-                className="  text-sm mb-2  text-black   dark:text-white"
+                className="  text-sm mb-2  text-black  "
               >
                 Enquiry Type
               </label>
@@ -233,7 +233,7 @@ const AddLeads = ({ mode }) => {
                 id="countries"
                 value={leadsData.enquiryType}
                 name="enquiryType"
-                className="bg-gray-50 w-11/12 border-gray-300 text-gray-400 text-[14px]  rounded-[0.3rem] focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                className="bg-gray-50 w-11/12    px-3 py-3 border-none ring-1 focus:ring-2 ring-gray-300  text-xs  outline-none text-gray-400   rounded-[0.3rem] focus:ring-blue-500  block  p-2.5 "
               >
                 <option hidden selected>
                   Enquiry Type
@@ -259,7 +259,7 @@ const AddLeads = ({ mode }) => {
                 type="number"
                 value={leadsData.mobile}
                 name="mobile"
-                className="px-3 py-3 border-none ring-1  ring-gray-300 w-full text-xs rounded-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                className="px-3 py-3 border-none ring-1 no-spinner  ring-gray-300 w-full text-xs rounded-sm focus:ring-2 focus:ring-blue-500 outline-none"
                 placeholder="Enter Your Phone Number"
               ></input>
 
@@ -318,7 +318,7 @@ const AddLeads = ({ mode }) => {
             <div className="flex flex-col flex-wrap w-[23%]">
               <label
                 htmlFor="countries"
-                className="   text-sm mb-2  text-black   dark:text-white"
+                className="   text-sm mb-2  text-black   "
               >
                 Deal Stage
               </label>
@@ -326,7 +326,7 @@ const AddLeads = ({ mode }) => {
                 id="countries"
                 name="stage"
                 value={leadsData.stage}
-                className="bg-gray-50 w-full roboto-semibold border-gray-300 text-[14px]  rounded-[0.3rem] focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                className="bg-gray-50 w-full    border-none ring-1 focus:ring-2 ring-gray-300  text-xs  outline-none text-gray-400   rounded-[0.3rem] focus:ring-blue-500  block  p-3 "
               >
                 <option style={{ opacity: 0.3 }} hidden selected>
                   Deal Stage
@@ -368,7 +368,7 @@ const AddLeads = ({ mode }) => {
                   value={leadsData.followUpDate}
                   name="followUpDate"
                   placeholder="date"
-                  className="appearance-none"
+                  className="appearance-none bg-gray-50     px-2 py-2 border-none ring-1 focus:ring-2 ring-gray-300  text-sm  outline-none   rounded-[0.3rem] focus:ring-blue-500  block  p-2.5 "
                 ></input>
                 {errors && errors.followUpDate ? (
                   <p className="text-xs text-red-600">Followup date required</p>
@@ -398,6 +398,7 @@ const AddLeads = ({ mode }) => {
                   type="date"
                   name="expectedClosureDate"
                   value={leadsData.expectedClosureDate}
+                  className="appearance-none bg-gray-50     px-2 py-2 border-none ring-1 focus:ring-2 ring-gray-300  text-sm  outline-none   rounded-[0.3rem] focus:ring-blue-500  block  p-2.5 "
                   placeholder="date"
                 ></input>
                 {errors && errors.expectedClosureDate ? (
@@ -433,7 +434,7 @@ const AddLeads = ({ mode }) => {
             <div className="flex flex-col flex-wrap w-1/4">
               <label
                 htmlFor="countries"
-                className="    text-sm mb-2  text-black   dark:text-white"
+                className="    text-sm mb-2  text-black  "
               >
                 Package
               </label>
@@ -441,7 +442,7 @@ const AddLeads = ({ mode }) => {
                 id="countries"
                 name="package"
                 value={leadsData.package}
-                className="bg-gray-50 w-full border-gray-300 text-[14px]  rounded-[0.3rem] focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                className="bg-gray-50 w-full    border-none ring-1 focus:ring-2 ring-gray-300  text-xs  outline-none text-gray-400   rounded-[0.3rem] focus:ring-blue-500  block  p-3 "
               >
                 <option hidden selected>
                   Package
@@ -480,7 +481,7 @@ const AddLeads = ({ mode }) => {
             <div className="flex flex-col flex-wrap w-1/4">
               <label
                 htmlFor="countries"
-                className="   text-sm mb-2  text-black   dark:text-white"
+                className="   text-sm mb-2  text-black   "
               >
                 Destination
               </label>
@@ -488,7 +489,7 @@ const AddLeads = ({ mode }) => {
                 id="countries"
                 name="destination"
                 value={leadsData.destination}
-                className="bg-gray-50 w-full border-gray-300 text-gray-400 text-[14px]  rounded-[0.3rem] focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                className="bg-gray-50 w-full    border-none ring-1 focus:ring-2 ring-gray-300  text-xs  outline-none text-gray-400   rounded-[0.3rem] focus:ring-blue-500  block  p-3 "
               >
                 <option hidden selected>
                   Destination

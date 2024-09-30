@@ -1,12 +1,8 @@
-import withMT from "@material-tailwind/html/utils/withMT";
-import flowbitePlugin from 'flowbite/plugin';
-export default withMT({
+export default ({
     content: [
         "./index.html",
         "./src/**/*.{vue,js,ts,jsx,tsx}",
-        "path-to-your-node_modules/@material-tailwind/react/components/**/*.{js,ts,jsx,tsx}",
-        "path-to-your-node_modules/@material-tailwind/react/theme/components/**/*.{js,ts,jsx,tsx}",
-        'node_modules/flowbite-react/lib/esm/**/*.js'
+
     ],
     theme: {
         extend: {
@@ -26,7 +22,7 @@ export default withMT({
             }
         },
     },
-    plugins: [flowbitePlugin, function ({ addUtilities }) {
+    plugins: [function ({ addUtilities }) {
         addUtilities({
             '.no-spinner::-webkit-outer-spin-button, .no-spinner::-webkit-inner-spin-button': {
                 '-webkit-appearance': 'none',

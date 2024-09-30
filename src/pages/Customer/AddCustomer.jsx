@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import moment from "moment-timezone";
-import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { useSelector } from "react-redux";
 const AddCustomer = ({ mode }) => {
@@ -247,7 +246,7 @@ const AddCustomer = ({ mode }) => {
               <div className="flex flex-col flex-wrap w-[30%]">
                 <label
                   htmlFor="countries"
-                  className="  text-sm mb-2  text-black   dark:text-white"
+                  className="  text-sm mb-2  text-black   "
                 >
                   Enquiry Type
                 </label>
@@ -255,7 +254,7 @@ const AddCustomer = ({ mode }) => {
                   id="countries"
                   name="enquiryType"
                   value={customerDatas.enquiryType}
-                  className="bg-gray-50 w-4/5 border-gray-300 text-gray-400 text-[14px]  rounded-[0.3rem] focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  className="bg-gray-50 w-4/5 border-none ring-1 focus:ring-2 ring-gray-300  text-sm  outline-none  roboto-medium rounded-[0.3rem] focus:ring-blue-500  block  px-2 py-3"
                 >
                   <option hidden selected>
                     Enquiry Type
@@ -318,14 +317,14 @@ const AddCustomer = ({ mode }) => {
               <div className="flex flex-col flex-wrap mx-7 w-[30%]">
                 <label
                   htmlFor="countries"
-                  className="   text-sm mb-2  text-black  font-medium dark:text-white"
+                  className="   text-sm mb-2  text-black  font-medium"
                 >
                   Package
                 </label>
                 <select
                   name="package"
                   value={customerDatas.package}
-                  className="bg-gray-50 w-4/5 border-gray-300 text-gray-400 text-[14px] rounded-[0.3rem] focus:ring-blue-500 focus:border-blue-500 block  p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  className="bg-gray-50 w-4/5 border-none ring-1 focus:ring-2 ring-gray-300  text-sm  outline-none  roboto-medium rounded-[0.3rem] focus:ring-blue-500  block  px-2 py-3"
                 >
                   <option hidden selected>
                     Package
@@ -350,15 +349,14 @@ const AddCustomer = ({ mode }) => {
             <div className="flex flex-col flex-wrap w-1/5">
               <label
                 htmlFor="countries"
-                className="   text-sm mb-2  text-black  font-medium dark:text-white"
+                className="   text-sm mb-2  text-black  font-medium "
               >
                 Stage
               </label>
               <select
                 id="countries"
-                value={customerDatas.stage}
                 name="stage"
-                className="bg-gray-50 w-full border-gray-300 text-[14px] rounded-[0.3rem] focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                className="bg-gray-50 w-full border-none ring-1 focus:ring-2 ring-gray-300  text-sm  outline-none  roboto-medium rounded-[0.3rem] focus:ring-blue-500  block  px-2 py-3"
               >
                 <option style={{ opacity: 0.3 }} hidden selected>
                   Stage
@@ -403,7 +401,7 @@ const AddCustomer = ({ mode }) => {
                   type="date"
                   value={customerDatas.startDate}
                   name="startDate"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-sm focus:ring-blue-500 focus:border-blue-500 block w-full  p-3 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  className="bg-gray-50 w-full border-none ring-1 focus:ring-2 ring-gray-300  text-sm  outline-none  roboto-medium rounded-[0.3rem] focus:ring-blue-500  block  px-2 py-3"
                   placeholder="Select date"
                 />{" "}
                 {errors && errors.startDate ? (
@@ -420,7 +418,7 @@ const AddCustomer = ({ mode }) => {
                   type="date"
                   value={customerDatas.endDate}
                   name="endDate"
-                  className="bg-gray-50 border  border-gray-300 text-gray-900 text-sm rounded-sm focus:ring-blue-500 focus:border-blue-500 block w-full  p-3 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  className="bg-gray-50 w-full border-none ring-1 focus:ring-2 ring-gray-300  text-sm  outline-none  roboto-medium rounded-[0.3rem] focus:ring-blue-500  block  px-2 py-3"
                   placeholder="Select date"
                 />{" "}
                 {errors && errors.endDate ? (
@@ -432,11 +430,8 @@ const AddCustomer = ({ mode }) => {
             </div>
             <div className="w-[18%] mr-2 ">
               <h4 className="mb-2 text-sm">VISA</h4>
-              <div className="flex  py-2.5 w-full border-[1px] rounded-sm px-2 justify-between items-center border-gray-400 hover:bg-stone-300">
-                <label
-                  className="text-sm bg-stone-200   block"
-                  htmlFor="fileUpload"
-                >
+              <div className="flex  py-2.5 w-full border-[1px] rounded-sm px-2 justify-between items-center ">
+                <label className="text-sm    block" htmlFor="fileUpload">
                   <input
                     type="file"
                     name="visa"

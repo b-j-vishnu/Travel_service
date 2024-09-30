@@ -24,7 +24,7 @@ import Customer from "./pages/Customer/Customer";
 import AddCustomer from "./pages/Customer/AddCustomer";
 import Finance from "./pages/Finance/Finance";
 import SignUp from "./pages/SignUp";
-import AddAdditionalPayement from "./pages/InvoiceORbill/AddAdditionalPayement";
+//import AddAdditionalPayement from "./pages/InvoiceORbill/AddAdditionalPayement";
 import axios from "axios";
 import { useState, useEffect } from "react";
 const App = () => {
@@ -111,10 +111,10 @@ const App = () => {
             path="/invoice/editInvoice/:id"
             element={<AddInvoice mode="edit" />}
           ></Route>
-          <Route
+          {/*<Route
             path="additionalPayment"
             element={<AddAdditionalPayement />}
-          ></Route>
+          ></Route>*/}
           <Route
             path="/invoice/viewInvoice/:id"
             element={<ViewInvoice />}

@@ -166,7 +166,7 @@ const SignUp = () => {
                           placeholder="Enter username"
                           name="userName"
                           value={credentials.userName}
-                          className="px-4 py-2.5 w-full focus:ring-0 bg-blue-gray-900 border-none rounded-xl"
+                          className="px-4 py-2.5  w-full focus:ring-0 focus:outline-none  bg-transparent border-none rounded-xl"
                         />
                         <span className="flex flex-col  items-center">
                           <svg
@@ -211,7 +211,7 @@ const SignUp = () => {
                         placeholder="Enter Email"
                         name="email"
                         value={credentials.email}
-                        className="px-4 py-2.5 w-full focus:ring-0 bg-blue-gray-900 border-none rounded-xl"
+                        className="px-4 py-2.5 w-full focus:ring-0 focus:outline-none  bg-transparent  bg-blue-gray-900 border-none rounded-xl"
                       />
                       <span className="flex flex-col  items-center">
                         <svg
@@ -243,7 +243,7 @@ const SignUp = () => {
                           placeholder="Enter Mobile Number"
                           name="mobile"
                           value={credentials.mobile}
-                          className="px-4 py-2.5 w-full focus:ring-0 bg-blue-gray-900 border-none rounded-xl"
+                          className="px-4 py-2.5 w-full no-spinner focus:outline-none  bg-transparent  focus:ring-0 border-none rounded-xl"
                         />
                         <span className="flex flex-col  items-center">
                           <svg
@@ -276,7 +276,7 @@ const SignUp = () => {
                           placeholder="Enter password"
                           name="password"
                           value={credentials.password}
-                          className="px-4 py-2.5 w-full focus:ring-0 bg-blue-gray-900 border-none rounded-xl"
+                          className="px-4 py-2.5 w-full focus:ring-0 focus:outline-none  bg-transparent  border-none rounded-xl"
                         />
                         <span className="flex flex-col  items-center">
                           <svg

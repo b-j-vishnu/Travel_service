@@ -35,6 +35,7 @@ const AddInvoice = ({ mode }) => {
       };
 
       setInvoice(data);
+      setSelectedById(data);
     }
   }, [InvoiceInformation]);
 
@@ -48,6 +49,7 @@ const AddInvoice = ({ mode }) => {
         );
         console.log(response.data);
         if (response.status === 200) {
+          console.log(response.data.foundedPerson);
           setSelectedById(response.data.foundedPerson);
         }
       } catch (err) {
@@ -74,7 +76,8 @@ const AddInvoice = ({ mode }) => {
     const dataToSend = JSON.stringify({
       ...invoice,
       userId,
-      fullName: `${firstName} ${lastName}`,
+      firstName,
+      lastName,
       total: billingAmount,
       pending: balancePayment,
     });
@@ -127,13 +130,14 @@ const AddInvoice = ({ mode }) => {
                 <label
                   htmlFor="countries"
                   className="  roboto-semibold 
-                  text-sm mb-2  text-black  font-medium dark:text-white"
+                  text-sm mb-2  text-black  font-medium "
                 >
                   Proposal Date
                 </label>
                 <input
                   type="date"
                   value={invoice.proposalDate}
+                  className="bg-gray-50 w-full border-none ring-1 focus:ring-2 ring-gray-300  text-sm  outline-none  roboto-medium rounded-[0.3rem] focus:ring-blue-500  block  px-2 py-3"
                   name="proposalDate"
                 ></input>
               </div>
@@ -148,7 +152,7 @@ const AddInvoice = ({ mode }) => {
                     name="validDate"
                     type="date"
                     value={invoice.validDate}
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-sm focus:ring-blue-500 focus:border-blue-500 block w-full  p-3 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    className="bg-gray-50 w-full border-none ring-1 focus:ring-2 ring-gray-300  text-sm  outline-none  roboto-medium rounded-[0.3rem] focus:ring-blue-500  block  px-2 py-3"
                     placeholder="Select date"
                   />
                 </div>
@@ -156,14 +160,14 @@ const AddInvoice = ({ mode }) => {
               <div className="flex flex-col flex-wrap w-[23%]">
                 <label
                   htmlFor="countries"
-                  className="  roboto-bold text-sm mb-2  text-black  font-medium dark:text-white"
+                  className="  roboto-bold text-sm mb-2  text-black  font-medium "
                 >
                   Accept Payment Via
                 </label>
                 <select
                   name="acceptPaymentVia"
                   value={invoice.acceptPaymentVia}
-                  className="bg-gray-50 w-full border-gray-300 text-gray-400 text-[14px] roboto-medium rounded-sm focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  className="bg-gray-50 w-full border-none ring-1 focus:ring-2 ring-gray-300  text-sm  outline-none  roboto-medium rounded-[0.3rem] focus:ring-blue-500  block  px-2 py-3"
                 >
                   <option hidden selected>
                     Select value
@@ -221,7 +225,7 @@ const AddInvoice = ({ mode }) => {
               <div className="flex flex-col  flex-wrap w-[19%]">
                 <label
                   htmlFor="countries"
-                  className="  roboto-semibold text-sm mb-2  text-black  font-medium dark:text-white"
+                  className="  roboto-semibold text-sm mb-2  text-black  font-medium "
                 >
                   Invoice To
                 </label>
@@ -229,7 +233,7 @@ const AddInvoice = ({ mode }) => {
                   name="invoiceTo"
                   value={invoice.invoiceTo}
                   disabled={mode === "edit" ? true : false}
-                  className="bg-gray-50 w-full border-gray-300 text-gray-400 text-[14px] roboto-medium rounded-[0.3rem] focus:ring-blue-500 focus:border-blue-500 block   dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  className="bg-gray-50 w-full border-none ring-1 focus:ring-2 ring-gray-300  text-sm  outline-none  roboto-medium rounded-[0.3rem] focus:ring-blue-500  block  px-2 py-3"
                 >
                   <option hidden selected>
                     Select
@@ -241,14 +245,14 @@ const AddInvoice = ({ mode }) => {
               <div className="flex flex-col    flex-wrap w-[19%]">
                 <label
                   htmlFor="countries"
-                  className="  roboto-semibold text-sm mb-2  text-black  font-medium dark:text-white"
+                  className="  roboto-semibold text-sm mb-2  text-black  font-medium "
                 >
                   Destination Template
                 </label>
                 <select
                   name="destinationTemplate"
                   value={invoice.destinationTemplate}
-                  className="bg-gray-50 w-full border-gray-300 text-gray-400 text-[14px] roboto-medium rounded-[0.3rem] focus:ring-blue-500 focus:border-blue-500 block   dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  className="bg-gray-50 w-full border-none ring-1 focus:ring-2 ring-gray-300  text-sm  outline-none  roboto-medium rounded-[0.3rem] focus:ring-blue-500  block  px-2 py-3"
                 >
                   <option hidden selected>
                     Select
@@ -280,12 +284,13 @@ const AddInvoice = ({ mode }) => {
                     disabled={mode === "edit" ? true : false}
                     value={invoice.userId}
                     name="userId"
-                    className="w-28 focus:ring-0  border-none"
+                    className="w-28 h-10 outline-none focus:ring-0  border-none"
                   ></input>
                 </td>
                 <td className="px-4 py-1 w-[15%]  border-r-2 border-b-2">
                   <p className="w-28 focus:ring-0  border-none">
-                    {selectedById && selectedById.firstName}
+                    {selectedById &&
+                      `${selectedById.firstName} ${selectedById.lastName} `}
                   </p>
                 </td>
                 <td className="px-4 py-1 w-[15%] border-r-2 border-b-2 ">

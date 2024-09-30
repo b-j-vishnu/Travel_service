@@ -102,7 +102,8 @@ const Itinerary = () => {
       );
       if (response.status === 200) {
         setTriggerRender(!triggerRender);
-        setCheckBox(!checkBox);
+        setCheckBox({});
+        setAllCheckBox(false);
         toast.success("successfull deleted");
       }
     } catch (err) {
@@ -250,7 +251,7 @@ const Itinerary = () => {
                           </td>
                           <td className="flex items-center relative pt-5  text-sm">
                             <p className=" poppins-bold px-1">
-                              {person.fullName}
+                              {`${person.firstName} ${person.lastName}`}
                             </p>
                             <svg
                               onClick={() => handleShowDrapdown(person.userId)}
